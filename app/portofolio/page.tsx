@@ -1,54 +1,68 @@
+import Link from "next/link";
+
 const projects = [
   {
     number: "01",
     title: "Website Biodata",
-    category: "HTML & CSS",
+    type: "HTML & CSS",
     description:
-      "Latihan membuat halaman biodata sederhana dengan struktur yang rapi.",
+      "Latihan membuat halaman biodata dengan struktur konten yang sederhana dan rapi.",
   },
   {
     number: "02",
     title: "Halaman Produk",
-    category: "Frontend",
+    type: "Frontend Practice",
     description:
-      "Latihan membuat tampilan produk dengan informasi harga dan menu navigasi.",
+      "Eksplorasi tampilan produk, informasi harga, dan penataan konten yang mudah dibaca.",
   },
   {
     number: "03",
-    title: "Website Portfolio",
-    category: "Next.js",
+    title: "Portfolio Next.js",
+    type: "Next.js App Router",
     description:
-      "Project menggunakan App Router dengan halaman beranda, profil, dan portofolio.",
+      "Website dengan halaman beranda, profil, serta portofolio menggunakan sistem routing Next.js.",
   },
 ];
 
-export default function Portofolio() {
+export default function PortofolioPage() {
   return (
-    <main className="container page-content">
-      <section className="page-heading">
-        <p className="eyebrow">Portofolio</p>
-        <h1>Beberapa project latihan saya.</h1>
+    <main className="frame portfolio-page">
+      <section className="portfolio-heading">
+        <p className="section-code">01 — PORTOFOLIO</p>
+        <h1>Project kecil, proses yang besar.</h1>
         <p>
-          Setiap project membantu saya memahami cara membuat website dengan
-          struktur, tampilan, dan navigasi yang lebih baik.
+          Kumpulan latihan yang saya gunakan untuk memahami dasar pembuatan
+          website dan antarmuka.
         </p>
       </section>
 
-      <section className="project-list">
-        {projects.map((project) => (
-          <article className="project-card" key={project.number}>
-            <span className="project-number">{project.number}</span>
+      <section className="project-grid">
+        {projects.map((project, index) => (
+          <article
+            className={`project-item project-item-${index + 1}`}
+            key={project.number}
+          >
+            <div className="project-top">
+              <span>{project.number}</span>
+              <span>{project.type}</span>
+            </div>
 
             <div>
-              <p className="card-label">{project.category}</p>
               <h2>{project.title}</h2>
               <p>{project.description}</p>
             </div>
 
-            <span className="arrow">↗</span>
+            <span className="project-arrow">↗</span>
           </article>
         ))}
       </section>
+
+      <div className="portfolio-end">
+        <p>Masih belajar dan akan terus menambah project baru.</p>
+        <Link className="underlined-link" href="/profile">
+          Kembali ke profil →
+        </Link>
+      </div>
     </main>
   );
 }
