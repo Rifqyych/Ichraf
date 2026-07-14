@@ -2,31 +2,55 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="home">
-      <section className="hero">
-        <p className="label">TEAM 2 · NEXT.JS</p>
-        <h1>Halo, saya mahasiswa yang sedang belajar membuat website.</h1>
-        <p className="description">
-          Ini adalah halaman utama sederhana yang berisi navigasi ke profil
-          dan portofolio saya.
-        </p>
+    <main>
+      <section className="hero container">
+        <div className="hero-content">
+          <p className="eyebrow">Mahasiswa · Web Developer Pemula</p>
 
-        <nav className="menu">
-          <Link href="/profil">Lihat Profil</Link>
-          <Link href="/portofolio">Lihat Portofolio</Link>
-        </nav>
-      </section>
+          <h1>
+            Halo, saya
+            <br />
+            Ahmad Chairul Ichraf.
+          </h1>
 
-      <section className="info">
-        <div>
-          <p className="label">Tentang Website</p>
-          <h2>Belajar membuat halaman dengan App Router Next.js.</h2>
+          <p className="hero-description">
+            Saya sedang belajar membangun website yang rapi, sederhana, dan
+            mudah digunakan dengan Next.js.
+          </p>
+
+          <div className="hero-buttons">
+            <Link className="button primary-button" href="/portofolio">
+              Lihat Portofolio
+            </Link>
+            <Link className="text-button" href="/profile">
+              Kenalan dulu →
+            </Link>
+          </div>
         </div>
 
-        <p>
-          Setiap folder di dalam <code>app</code> dapat menjadi alamat halaman
-          baru, selama di dalamnya terdapat file <code>page.tsx</code>.
-        </p>
+        <aside className="profile-card">
+          <p className="card-label">SEKARANG BELAJAR</p>
+          <h2>Next.js App Router</h2>
+          <p>
+            Membuat halaman dengan folder <code>app</code>, <code>page.tsx</code>,
+            dan navigasi menggunakan <code>Link</code>.
+          </p>
+        </aside>
+      </section>
+
+      <section className="intro-section">
+        <div className="container intro-grid">
+          <p className="eyebrow">Tentang Website</p>
+          <div>
+            <h2>
+              Website ini dibuat sebagai tempat menyimpan proses belajar dan
+              latihan membuat project web.
+            </h2>
+            <Link className="text-button" href="/profile">
+              Baca profil saya →
+            </Link>
+          </div>
+        </div>
       </section>
     </main>
   );

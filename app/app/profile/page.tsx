@@ -1,38 +1,59 @@
 import Link from "next/link";
 
-export default function Profil() {
+const skills = ["HTML", "CSS", "JavaScript", "React", "Next.js"];
+
+export default function Profile() {
   return (
-    <main className="page">
-      <Link className="back-link" href="/">
-        ← Kembali ke Beranda
-      </Link>
+    <main className="container page-content">
+      <section className="page-heading">
+        <p className="eyebrow">Profil</p>
+        <h1>Perkenalkan, saya Ahmad Chairul Ichraf.</h1>
+        <p>
+          Saya adalah mahasiswa yang tertarik mempelajari pengembangan website
+          dan desain antarmuka yang mudah digunakan.
+        </p>
+      </section>
 
-      <p className="label">PROFIL</p>
-      <h1>Perkenalkan, saya [Nama Kamu].</h1>
-
-      <div className="content-grid">
-        <section>
-          <h2>Tentang Saya</h2>
+      <section className="profile-grid">
+        <article className="info-card">
+          <p className="card-label">TENTANG SAYA</p>
+          <h2>Belajar dari proses</h2>
           <p>
-            Saya adalah mahasiswa yang sedang mempelajari dasar pengembangan
-            website menggunakan HTML, CSS, JavaScript, dan Next.js.
+            Saya senang mencoba hal baru dalam dunia teknologi, terutama
+            membuat tampilan website yang bersih dan nyaman dilihat.
           </p>
-        </section>
+        </article>
 
-        <section>
-          <h2>Keahlian yang Dipelajari</h2>
-          <ul>
-            <li>HTML dan CSS</li>
-            <li>JavaScript</li>
-            <li>React</li>
-            <li>Next.js</li>
+        <article className="info-card">
+          <p className="card-label">KEAHLIAN</p>
+          <h2>Yang sedang dipelajari</h2>
+          <ul className="skill-list">
+            {skills.map((skill) => (
+              <li key={skill}>{skill}</li>
+            ))}
           </ul>
-        </section>
-      </div>
+        </article>
 
-      <Link className="button" href="/portofolio">
-        Lihat Portofolio →
-      </Link>
+        <article className="info-card">
+          <p className="card-label">TUJUAN</p>
+          <h2>Terus berkembang</h2>
+          <p>
+            Saya ingin memahami cara membuat aplikasi web yang tidak hanya
+            berjalan dengan baik, tetapi juga mudah dipahami pengguna.
+          </p>
+        </article>
+      </section>
+
+      <section className="bottom-cta">
+        <div>
+          <p className="eyebrow">Selanjutnya</p>
+          <h2>Lihat beberapa latihan project saya.</h2>
+        </div>
+
+        <Link className="button primary-button" href="/portofolio">
+          Buka Portofolio
+        </Link>
+      </section>
     </main>
   );
 }

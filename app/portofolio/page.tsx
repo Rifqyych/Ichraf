@@ -1,52 +1,54 @@
-import Link from "next/link";
+const projects = [
+  {
+    number: "01",
+    title: "Website Biodata",
+    category: "HTML & CSS",
+    description:
+      "Latihan membuat halaman biodata sederhana dengan struktur yang rapi.",
+  },
+  {
+    number: "02",
+    title: "Halaman Produk",
+    category: "Frontend",
+    description:
+      "Latihan membuat tampilan produk dengan informasi harga dan menu navigasi.",
+  },
+  {
+    number: "03",
+    title: "Website Portfolio",
+    category: "Next.js",
+    description:
+      "Project menggunakan App Router dengan halaman beranda, profil, dan portofolio.",
+  },
+];
 
 export default function Portofolio() {
   return (
-    <main className="page">
-      <Link className="back-link" href="/">
-        ← Kembali ke Beranda
-      </Link>
-
-      <p className="label">PORTOFOLIO</p>
-      <h1>Beberapa latihan yang pernah saya buat.</h1>
-
-      <section className="project-list">
-        <article className="project">
-          <span>01</span>
-          <div>
-            <h2>Website Biodata</h2>
-            <p>
-              Latihan membuat halaman biodata sederhana menggunakan HTML dan
-              CSS.
-            </p>
-          </div>
-        </article>
-
-        <article className="project">
-          <span>02</span>
-          <div>
-            <h2>Halaman Produk</h2>
-            <p>
-              Latihan membuat tampilan produk dengan menu dan informasi harga.
-            </p>
-          </div>
-        </article>
-
-        <article className="project">
-          <span>03</span>
-          <div>
-            <h2>Website Next.js</h2>
-            <p>
-              Website dengan halaman beranda, profil, dan portofolio menggunakan
-              App Router.
-            </p>
-          </div>
-        </article>
+    <main className="container page-content">
+      <section className="page-heading">
+        <p className="eyebrow">Portofolio</p>
+        <h1>Beberapa project latihan saya.</h1>
+        <p>
+          Setiap project membantu saya memahami cara membuat website dengan
+          struktur, tampilan, dan navigasi yang lebih baik.
+        </p>
       </section>
 
-      <Link className="button" href="/profil">
-        Buka Profil →
-      </Link>
+      <section className="project-list">
+        {projects.map((project) => (
+          <article className="project-card" key={project.number}>
+            <span className="project-number">{project.number}</span>
+
+            <div>
+              <p className="card-label">{project.category}</p>
+              <h2>{project.title}</h2>
+              <p>{project.description}</p>
+            </div>
+
+            <span className="arrow">↗</span>
+          </article>
+        ))}
+      </section>
     </main>
   );
 }
