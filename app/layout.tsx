@@ -27,7 +27,6 @@ export default function RootLayout({
               <Link href="/portofolio">Portofolio</Link>
             </nav>
 
-            <span className="availability">OPEN TO LEARN</span>
           </div>
         </header>
 
