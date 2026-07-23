@@ -19,6 +19,21 @@ export default function ProjectCard({
 }: ProjectCardProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  // State Like
+  const [likes, setLikes] = useState(0);
+  const [liked, setLiked] = useState(false);
+
+  // Toggle Like
+  function handleLike() {
+    if (liked) {
+      setLikes(likes - 1);
+      setLiked(false);
+    } else {
+      setLikes(likes + 1);
+      setLiked(true);
+    }
+  }
+
   return (
     <>
       <button
@@ -55,6 +70,13 @@ export default function ProjectCard({
         <div>
           <h2>{title}</h2>
           <p>{description}</p>
+
+          {/* Label Populer */}
+          {likes >= 5 && (
+            <p style={{ color: "red", fontWeight: "bold" }}>
+              🔥 Populer
+            </p>
+          )}
         </div>
 
         <strong>Klik untuk detail ↗</strong>
@@ -74,7 +96,7 @@ export default function ProjectCard({
               onClick={() => setIsOpen(false)}
               aria-label="Tutup detail project"
             >
-              
+              ✕
             </button>
 
             <p className="eyebrow">{category}</p>
@@ -82,11 +104,28 @@ export default function ProjectCard({
             <p>{description}</p>
 
             <h3>Tools yang digunakan</h3>
+
             <div className="skill-list">
               {tools.map((tool) => (
                 <span key={tool}>{tool}</span>
               ))}
             </div>
+
+            <hr style={{ margin: "20px 0" }} />
+
+            <h3>Berikan Like</h3>
+
+            <p>Jumlah Like: {likes}</p>
+
+            <button type="button" onClick={handleLike}>
+              {liked ? "Batal Suka" : "Suka"}
+            </button>
+
+            {likes >= 5 && (
+              <p style={{ color: "red", fontWeight: "bold", marginTop: "10px" }}>
+                🔥 Populer
+              </p>
+            )}
           </section>
         </div>
       )}
