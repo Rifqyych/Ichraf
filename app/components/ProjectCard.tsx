@@ -1,13 +1,22 @@
 "use client";
 
 import { useState } from "react";
-import type { Project } from "../data/team";
 
 type ProjectCardProps = {
-  project: Project;
+  number: string;
+  category: string;
+  title: string;
+  description: string;
+  tools: string[];
 };
 
-export default function ProjectCard({ project }: ProjectCardProps) {
+export default function ProjectCard({
+  number,
+  category,
+  title,
+  description,
+  tools,
+}: ProjectCardProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -17,18 +26,20 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         type="button"
         onClick={() => setIsOpen(true)}
       >
-        <div className={`project-visual visual-${project.number}`} aria-hidden="true">
+        <div className={`project-visual visual-${number}`} aria-hidden="true">
           <div className="visual-browser-bar">
             <span />
             <span />
             <span />
             <i />
           </div>
+
           <div className="visual-copy">
             <b>RPL PROJECT</b>
-            <strong>{project.category}</strong>
+            <strong>{category}</strong>
             <em />
           </div>
+
           <div className="visual-panel">
             <span className="visual-folder">⌁</span>
             <span className="visual-folder">⌁</span>
@@ -37,13 +48,13 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </div>
 
         <div className="project-card-top">
-          <span>{project.number}</span>
-          <span>{project.category}</span>
+          <span>{number}</span>
+          <span>{category}</span>
         </div>
 
         <div>
-          <h2>{project.title}</h2>
-          <p>{project.description}</p>
+          <h2>{title}</h2>
+          <p>{description}</p>
         </div>
 
         <strong>Klik untuk detail ↗</strong>
@@ -63,16 +74,16 @@ export default function ProjectCard({ project }: ProjectCardProps) {
               onClick={() => setIsOpen(false)}
               aria-label="Tutup detail project"
             >
-              ×
+              
             </button>
 
-            <p className="eyebrow">{project.category}</p>
-            <h2>{project.title}</h2>
-            <p>{project.description}</p>
+            <p className="eyebrow">{category}</p>
+            <h2>{title}</h2>
+            <p>{description}</p>
 
             <h3>Tools yang digunakan</h3>
             <div className="skill-list">
-              {project.tools.map((tool) => (
+              {tools.map((tool) => (
                 <span key={tool}>{tool}</span>
               ))}
             </div>

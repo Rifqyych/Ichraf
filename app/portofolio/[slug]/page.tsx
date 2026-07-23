@@ -36,7 +36,14 @@ export default async function MemberPortofolioPage({ params }: PageProps) {
 
       <section className="project-grid">
         {member.projects.map((project) => (
-          <ProjectCard key={project.number} project={project} />
+          <ProjectCard
+            key={project.number}
+            number={project.number}
+            category={project.category}
+            title={project.title}
+            description={project.description}
+            tools={project.tools}
+          />
         ))}
       </section>
     </main>
