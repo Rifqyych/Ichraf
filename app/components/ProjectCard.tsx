@@ -20,9 +20,18 @@ export default function ProjectCard({
   const [isOpen, setIsOpen] = useState(false);
 
   // State Like
-  const [likes, setLikes] = useState(0);
-  const [liked, setLiked] = useState(false);
+ const [liked, setLiked] = useState(false);
+const [likes, setLikes] = useState(0);
 
+const toggleLike = () => {
+  if (liked) {
+    setLiked(false);
+    setLikes((prev) => prev - 1);
+  } else {
+    setLiked(true);
+    setLikes((prev) => prev + 1);
+  }
+};
   // Toggle Like
   function handleLike() {
     if (liked) {
@@ -96,7 +105,7 @@ export default function ProjectCard({
               onClick={() => setIsOpen(false)}
               aria-label="Tutup detail project"
             >
-              ✕
+              
             </button>
 
             <p className="eyebrow">{category}</p>
@@ -110,6 +119,51 @@ export default function ProjectCard({
                 <span key={tool}>{tool}</span>
               ))}
             </div>
+            <div className="like-section">
+  <div className="like-title">
+    <h3>❤️ Berikan Like</h3>
+
+    {likes >= 5 && (
+      <span className="popular-badge">
+        🔥 POPULER
+      </span>
+    )}
+  </div>
+
+  <div className="like-count">
+    <div className="like-icon">
+      ❤️
+    </div>
+
+    <div className="like-number">
+      <strong>{likes}</strong>
+      <span>{likes === 1 ? "Like" : "Likes"}</span>
+    </div>
+  </div>
+
+  <div className="like-progress">
+    <div
+      className="like-progress-fill"
+      style={{
+        width: `${Math.min((likes / 5) * 100, 100)}%`,
+      }}
+    />
+  </div>
+
+  <button
+    type="button"
+    className={`like-button ${liked ? "liked" : ""}`}
+    onClick={toggleLike}
+  >
+    {liked ? "💔 Batal Suka" : "❤️ Suka Project Ini"}
+  </button>
+
+  {liked && (
+    <div className="like-message">
+      Terima kasih telah memberikan like pada project ini!
+    </div>
+  )}
+</div>
 
             <hr style={{ margin: "20px 0" }} />
 
