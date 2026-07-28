@@ -899,3 +899,351 @@ h3 {
   background:#eef3ff;
   font-weight:700;
 }
+/* ===========================
+   GUESTBOOK
+=========================== */
+
+.guestbook-card{
+  background:#fff;
+  border:2px solid var(--ink);
+  box-shadow:10px 10px 0 var(--ink);
+  padding:35px;
+}
+
+.guestbook-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:30px;
+  gap:20px;
+}
+
+.guestbook-header h2{
+  margin:0;
+  font-size:38px;
+}
+
+.guestbook-header p{
+  margin-top:8px;
+  color:var(--muted);
+}
+
+.guestbook-total{
+  width:110px;
+  height:110px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  border:2px solid var(--ink);
+  background:var(--yellow);
+  box-shadow:5px 5px 0 var(--ink);
+  font-size:38px;
+  font-weight:900;
+}
+
+.guestbook-total span{
+  font-size:13px;
+  margin-top:4px;
+}
+
+.guestbook-form{
+  display:flex;
+  gap:15px;
+  margin-bottom:35px;
+}
+
+.guestbook-form input{
+  flex:1;
+  padding:16px;
+  border:2px solid var(--ink);
+  font-size:16px;
+  outline:none;
+}
+
+.guestbook-form input:focus{
+  border-color:var(--blue);
+}
+
+.guestbook-form button{
+  padding:16px 28px;
+  border:2px solid var(--ink);
+  background:var(--blue);
+  color:white;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:5px 5px 0 var(--ink);
+  transition:.2s;
+}
+
+.guestbook-form button:hover{
+  background:var(--orange);
+  transform:translate(-3px,-3px);
+  box-shadow:8px 8px 0 var(--ink);
+}
+
+.guestbook-list{
+  display:grid;
+  gap:18px;
+}
+
+.guestbook-item{
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+  padding:20px;
+  border:2px solid var(--line);
+  background:#fafafa;
+  transition:.2s;
+}
+
+.guestbook-item:hover{
+  transform:translateY(-3px);
+  border-color:var(--blue);
+}
+
+.guestbook-avatar{
+  width:58px;
+  height:58px;
+  display:grid;
+  place-items:center;
+  border:2px solid var(--ink);
+  background:var(--orange);
+  color:white;
+  font-size:22px;
+  font-weight:900;
+}
+
+.guestbook-content{
+  flex:1;
+}
+
+.guestbook-content h3{
+  margin:0 0 8px;
+  font-size:22px;
+}
+
+.guestbook-content p{
+  margin:0;
+  color:var(--muted);
+  line-height:1.7;
+}
+
+.guestbook-empty{
+  padding:50px;
+  text-align:center;
+  border:2px dashed var(--line);
+}
+
+.guestbook-empty h3{
+  margin-bottom:10px;
+  font-size:28px;
+}
+
+.guestbook-empty p{
+  color:var(--muted);
+}
+
+@media(max-width:720px){
+
+.guestbook-form{
+  flex-direction:column;
+}
+
+.guestbook-header{
+  flex-direction:column;
+  align-items:flex-start;
+}
+
+.guestbook-total{
+  width:100%;
+  height:90px;
+}
+
+}
+/* =======================================
+   MEMBER PHOTO
+======================================= */
+
+.member-photo{
+  position: relative;
+  width: 150px;
+  height: 150px;
+  margin: 18px auto 24px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 5px solid #ffffff;
+  box-shadow:
+    0 10px 25px rgba(0,0,0,.18),
+    0 0 0 3px rgba(255,255,255,.25);
+  transition:
+    transform .35s ease,
+    box-shadow .35s ease,
+    border-color .35s ease;
+}
+
+.member-photo img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.member-card:hover .member-photo{
+  transform: scale(1.08) rotate(-2deg);
+  border-color: var(--yellow);
+  box-shadow:
+    0 18px 35px rgba(0,0,0,.28),
+    0 0 0 5px rgba(245,216,90,.5);
+}
+
+.member-photo::after{
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,.20),
+    transparent 45%
+  );
+}
+/* =======================================
+   PROFILE PHOTO
+======================================= */
+
+.big-photo{
+  width:260px;
+  height:260px;
+  overflow:hidden;
+  border-radius:24px;
+  border:4px solid white;
+  box-shadow:12px 12px 0 rgba(255,255,255,.18);
+}
+
+.big-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* =======================================
+   PORTFOLIO PHOTO
+======================================= */
+
+.profile-avatar{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  overflow:hidden;
+  border:3px solid white;
+  box-shadow:0 5px 15px rgba(0,0,0,.18);
+}
+
+.profile-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* =======================================
+   RESPONSIVE
+======================================= */
+
+@media(max-width:720px){
+
+.member-photo{
+  width:90px;
+  height:90px;
+  margin:15px auto;
+}
+
+.big-photo{
+  width:180px;
+  height:180px;
+  margin:auto;
+}
+
+.profile-avatar{
+  width:52px;
+  height:52px;
+}
+
+}
+.profile-photo{
+  width:58px;
+  height:58px;
+  overflow:hidden;
+  border-radius:50%;
+  border:2px solid #ffffff;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+
+.profile-photo img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.profile-photo-large{
+  border:4px solid #ffffff;
+  border-radius:18px;
+  overflow:hidden;
+
+  box-shadow:
+    0 0 0 4px #F4D35E,
+    0 12px 30px rgba(0,0,0,.25);
+
+  transition:.3s ease;
+}
+
+.profile-photo-large:hover{
+  transform:translateY(-4px);
+  box-shadow:
+    0 0 0 6px #F4D35E,
+    0 18px 40px rgba(0,0,0,.35);
+}
+.portfolio-person{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.portfolio-person-info{
+    display:flex;
+    align-items:center;
+    gap:24px;
+}
+
+.portfolio-person-photo{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #fff;
+    box-shadow:
+        0 8px 18px rgba(0,0,0,.18),
+        0 0 0 2px rgba(255,255,255,.25);
+    transition:.3s ease;
+}
+
+.portfolio-person:hover .portfolio-person-photo{
+    transform:scale(1.06);
+    box-shadow:
+        0 12px 28px rgba(0,0,0,.25),
+        0 0 0 3px var(--yellow);
+}
+
+.portfolio-person h2{
+    margin-top:6px;
+}
+
+.portfolio-person strong{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}

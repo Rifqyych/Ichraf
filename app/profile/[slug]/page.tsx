@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getMember, members } from "../../data/team";
@@ -21,7 +22,16 @@ export default async function MemberProfilePage({ params }: PageProps) {
   return (
     <main className="container member-profile-page">
       <section className={`member-profile-hero ${member.color}`}>
-        <div className="big-initials">{member.initials}</div>
+        <div className="profile-photo-large">
+          <Image
+            src={`/images/${member.slug}.png`}
+            alt={member.name}
+            width={320}
+            height={320}
+            className="profile-image"
+            priority
+          />
+        </div>
 
         <div>
           <p className="eyebrow">PROFIL ANGGOTA</p>

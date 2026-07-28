@@ -25,6 +25,7 @@ export default function RootLayout({
               <Link href="/">Beranda</Link>
               <Link href="/profile">Profil Tim</Link>
               <Link href="/portofolio">Portofolio</Link>
+              <Link href="/portofolio/bukutamu">Buku Tamu</Link>
             </nav>
           </div>
         </header>
