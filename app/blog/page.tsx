@@ -12,7 +12,7 @@ export default async function BlogPage() {
       {daftarArtikel.map((artikel: any) => (
         <div key={artikel.id} style={{ border: '1px solid #ccc', padding: '15px', marginBottom: '10px' }}>
           {/* Jadikan judul bisa diklik! */}
-          <Link href={`/portfolio/blog/${artikel.id}`}>
+          <Link href={`/blog/${artikel.id}`}>
             <h3 style={{ color: 'blue' }}>{artikel.title}</h3>
           </Link>
           <p>{artikel.body.substring(0, 100)}...</p>

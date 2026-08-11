@@ -1,10 +1,13 @@
 import Link from 'next/link';
 
-// 1. Terima params dari URL
-export default async function DetailArtikel({ params }: { params: { id: string } }) {
+// 1. Terima params dari URL (params sekarang berupa Promise di Next.js versi baru)
+export default async function DetailArtikel({ params }: { params: Promise<{ id: string }> }) {
+
+  // 1a. Await dulu params-nya sebelum dipakai
+  const { id } = await params;
 
   // 2. Fetch data spesifik berdasarkan ID dari param
-  const respon = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`);
+  const respon = await fetch(`https://jsonplaceholder.typicode.com/posts/${id}`);
 
   // 3. Konversi ke JSON
   const artikel = await respon.json();
@@ -12,7 +15,7 @@ export default async function DetailArtikel({ params }: { params: { id: string }
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       {/* Tombol kembali ke daftar blog */}
-      <Link href="/portfolio/blog" style={{ textDecoration: 'none', color: '#0070f3' }}>
+      <Link href="/portofolio/blog" style={{ textDecoration: 'none', color: '#0070f3' }}>
         Kembali ke Daftar Artikel
       </Link>
 
