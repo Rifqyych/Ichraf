@@ -144,7 +144,14 @@ export default async function HomePage() {
               <h3>{member.role}</h3>
               <p>{member.about}</p>
               <div className="contact-actions">
-                <Link className="section-link" href={`/cv/${member.slug}`}>Lihat / cetak CV →</Link>
+                <Link
+                  className="section-link"
+                  href={member.slug === "rifqy" ? "/cv-rifqy.pdf" : `/cv/${member.slug}`}
+                  target={member.slug === "rifqy" ? "_blank" : undefined}
+                  rel={member.slug === "rifqy" ? "noreferrer" : undefined}
+                >
+                  Lihat / cetak CV →
+                </Link>
                 {member.contactUrl ? (
                   <a className="section-link" href={member.contactUrl} target="_blank" rel="noreferrer">Hubungi via GitHub →</a>
                 ) : (
