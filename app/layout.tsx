@@ -22,11 +22,16 @@ export default function RootLayout({
             </Link>
 
             <nav className="navigation">
-              <Link href="/">Beranda</Link>
+              <Link href="/#intro">Perkenalan</Link>
+              <Link href="/#projects">Karya</Link>
+              <Link href="/#skills">Skills</Link>
+              <Link href="/#certificates">Sertifikat</Link>
+              <Link href="/#testimonials">Testimoni</Link>
+              <Link href="/#contact">Kontak</Link>
               <Link href="/profile">Profil Tim</Link>
-              <Link href="/portofolio">Portofolio</Link>
               <Link href="/portofolio/blog">Blog</Link>
               <Link href="/proyek">Proyek</Link>
+              <Link href="/admin">Admin</Link>
             </nav>
           </div>
         </header>

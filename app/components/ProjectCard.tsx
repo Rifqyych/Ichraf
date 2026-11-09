@@ -8,7 +8,8 @@ category: string;
 title: string;
 description: string;
 tools: string[];
-repositoryUrl?: string;
+linkUrl?: string;
+linkLabel?: string;
 };
 
 type CommentItem = {
@@ -23,7 +24,8 @@ category,
 title,
 description,
 tools,
-repositoryUrl,
+linkUrl,
+linkLabel,
 }: ProjectCardProps) {
 const [isOpen, setIsOpen] = useState(false);
 
@@ -151,14 +153,14 @@ onClick={() => setIsOpen(true)}
           ))}
         </div>
 
-        {repositoryUrl && (
+        {linkUrl && (
           <a
             className="project-repository-link"
-            href={repositoryUrl}
+            href={linkUrl}
             target="_blank"
             rel="noreferrer"
           >
-            Lihat repository GitHub &rarr;
+            {linkLabel ?? "Lihat repository GitHub"} &rarr;
           </a>
         )}
 

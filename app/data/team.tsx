@@ -4,7 +4,21 @@ export type Project = {
   category: string;
   description: string;
   tools: string[];
-  repositoryUrl?: string;
+  linkUrl?: string;
+  linkLabel?: string;
+};
+
+export type Certificate = {
+  title: string;
+  issuer: string;
+  date: string;
+  url?: string;
+};
+
+export type Testimonial = {
+  name: string;
+  role: string;
+  message: string;
 };
 
 export type TeamMember = {
@@ -17,6 +31,9 @@ export type TeamMember = {
   about: string;
   skills: string[];
   projects: Project[];
+  certificates: Certificate[];
+  testimonials: Testimonial[];
+  contactUrl?: string;
 };
 
 export const members: TeamMember[] = [
@@ -30,6 +47,8 @@ export const members: TeamMember[] = [
     about:
       "Zaki adalah siswa RPL yang sedang memperkuat basic RPL, terutama pembuatan website, logika pemrograman, dan pengelolaan kode menggunakan Git.",
     skills: ["Basic RPL", "HTML", "CSS", "JavaScript", "Git", "UI Dasar"],
+    certificates: [],
+    testimonials: [],
     projects: [
       {
         number: "01",
@@ -67,22 +86,29 @@ export const members: TeamMember[] = [
     about:
       "Rifqy adalah siswa RPL yang mempelajari basic RPL melalui pembuatan antarmuka website, aplikasi sederhana, dan latihan pemrograman JavaScript.",
     skills: ["Basic RPL", "HTML", "CSS", "JavaScript", "UI Design", "Git"],
+    certificates: [],
+    testimonials: [],
+    contactUrl: "https://github.com/Rifqyych",
     projects: [
       {
         number: "01",
-        title: "Landing Page Kelas",
-        category: "Frontend Website",
+        title: "Website Appau",
+        category: "Web Application",
         description:
-          "Halaman informasi kelas berisi jadwal pelajaran, struktur organisasi, galeri kegiatan, dan kontak pengurus kelas.",
-        tools: ["HTML", "CSS", "JavaScript", "Layout"],
+          "Website aplikasi berbasis web dengan antarmuka responsif untuk memberikan pengalaman penggunaan yang sederhana dan mudah dipahami.",
+        tools: ["HTML", "CSS", "JavaScript"],
+        linkUrl: "https://github.com/Rifqyych/Appau",
+        linkLabel: "Lihat repository GitHub",
       },
       {
         number: "02",
-        title: "Aplikasi Kasir Sederhana",
-        category: "JavaScript",
+        title: "Website Kursus Aliah",
+        category: "Portal Kursus",
         description:
-          "Aplikasi latihan transaksi yang dapat menghitung total belanja, jumlah bayar, kembalian, dan daftar pesanan.",
-        tools: ["HTML", "CSS", "JavaScript", "DOM"],
+          "Portal informasi kursus dengan tampilan responsif untuk menyajikan program belajar dan informasi yang mudah diakses pengunjung.",
+        tools: ["HTML", "CSS", "JavaScript"],
+        linkUrl: "https://kursus-aliah.vercel.app",
+        linkLabel: "Lihat website live",
       },
       {
         number: "03",
@@ -91,7 +117,8 @@ export const members: TeamMember[] = [
         description:
           "Platform website kursus untuk menampilkan program pembelajaran dan informasi kursus, dibangun menggunakan framework Laravel.",
         tools: ["Laravel", "PHP", "MySQL", "Blade", "Bootstrap"],
-        repositoryUrl: "https://github.com/Rifqyych/dkacademy",
+        linkUrl: "https://dkacademy.vercel.app",
+        linkLabel: "Lihat website live",
       },
     ],
   },

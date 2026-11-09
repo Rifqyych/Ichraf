@@ -5,7 +5,7 @@ import { members } from "./data/team";
 export default function HomePage() {
   return (
     <main>
-      <section className="hero container">
+      <section className="hero container" id="intro">
         <div>
           <p className="eyebrow">TEAM PORTFOLIO / RPL</p>
 
@@ -20,8 +20,8 @@ export default function HomePage() {
             siswa Rekayasa Perangkat Lunak.
           </p>
 
-          <Link className="main-button" href="/portofolio">
-            Lihat Semua Project
+          <Link className="main-button" href="#projects">
+            Lihat Karya
           </Link>
         </div>
 
@@ -32,7 +32,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="container member-section">
+      <section className="container member-section" id="projects">
         <div className="section-title">
           <p className="eyebrow">ANGGOTA TIM</p>
 
@@ -72,6 +72,93 @@ export default function HomePage() {
                 <Link href={`/portofolio/${member.slug}`}>
                   Project →
                 </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="container checklist-section" id="skills">
+        <div className="section-title">
+          <p className="eyebrow">SKILLS</p>
+          <h2>Keahlian yang sedang dipelajari.</h2>
+        </div>
+        <div className="checklist-grid">
+          {members.map((member) => (
+            <article className="checklist-card" key={member.slug}>
+              <p className="eyebrow">{member.name}</p>
+              <h3>{member.role}</h3>
+              <div className="skill-list">
+                {member.skills.map((skill) => <span key={skill}>{skill}</span>)}
+              </div>
+              <Link className="section-link" href={`/profile/${member.slug}`}>
+                Lihat profil →
+              </Link>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="container checklist-section" id="certificates">
+        <div className="section-title">
+          <p className="eyebrow">SERTIFIKAT</p>
+          <h2>Sertifikat dan pencapaian.</h2>
+        </div>
+        <div className="checklist-grid">
+          {members.map((member) => (
+            <article className="empty-content-card" key={member.slug}>
+              <p className="eyebrow">{member.name}</p>
+              {member.certificates.length ? member.certificates.map((certificate) => (
+                <div className="content-entry" key={`${certificate.title}-${certificate.issuer}`}>
+                  <strong>{certificate.title}</strong>
+                  <p>{certificate.issuer} · {certificate.date}</p>
+                  {certificate.url && <a className="section-link" href={certificate.url}>Lihat sertifikat →</a>}
+                </div>
+              )) : <><strong>Belum ada sertifikat yang ditambahkan.</strong><p>Tambahkan nama sertifikat, penyelenggara, tanggal, dan tautan di data anggota.</p></>}
+            </article>
+          ))}
+        </div>
+        <p><Link className="section-link" href="/admin">Buka halaman admin →</Link></p>
+      </section>
+
+      <section className="container checklist-section" id="testimonials">
+        <div className="section-title">
+          <p className="eyebrow">TESTIMONI</p>
+          <h2>Kata mereka tentang karya kami.</h2>
+        </div>
+        <div className="checklist-grid">
+          {members.map((member) => (
+            <article className="empty-content-card" key={member.slug}>
+              <p className="eyebrow">{member.name}</p>
+              {member.testimonials.length ? member.testimonials.map((testimonial) => (
+                <div className="content-entry" key={`${testimonial.name}-${testimonial.role}`}>
+                  <blockquote>“{testimonial.message}”</blockquote>
+                  <p><strong>{testimonial.name}</strong> · {testimonial.role}</p>
+                </div>
+              )) : <><strong>Belum ada testimoni.</strong><p>Testimoni ditampilkan setelah mendapat persetujuan pemberi masukan.</p></>}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="container checklist-section" id="contact">
+        <div className="section-title">
+          <p className="eyebrow">KONTAK & CV</p>
+          <h2>Kenali dan hubungi anggota tim.</h2>
+        </div>
+        <div className="checklist-grid">
+          {members.map((member) => (
+            <article className="checklist-card contact-card" key={member.slug}>
+              <p className="eyebrow">{member.name}</p>
+              <h3>{member.role}</h3>
+              <p>{member.about}</p>
+              <div className="contact-actions">
+                <Link className="section-link" href={`/cv/${member.slug}`}>Lihat / cetak CV →</Link>
+                {member.contactUrl ? (
+                  <a className="section-link" href={member.contactUrl} target="_blank" rel="noreferrer">Hubungi via GitHub →</a>
+                ) : (
+                  <span className="muted-note">Kontak langsung belum dicantumkan.</span>
+                )}
               </div>
             </article>
           ))}

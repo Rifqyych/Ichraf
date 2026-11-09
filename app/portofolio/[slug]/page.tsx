@@ -43,7 +43,8 @@ export default async function MemberPortofolioPage({ params }: PageProps) {
             title={project.title}
             description={project.description}
             tools={project.tools}
-            repositoryUrl={project.repositoryUrl}
+            linkUrl={project.linkUrl}
+            linkLabel={project.linkLabel}
           />
         ))}
       </section>
