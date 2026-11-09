@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import LiveContentRefresh from "./components/LiveContentRefresh";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -35,6 +36,7 @@ export default function RootLayout({
           </div>
         </header>
 
+        <LiveContentRefresh />
         {children}
 
         <footer className="site-footer">
