@@ -24,7 +24,6 @@ export default function TestimonialsSection({ members }: { members: MemberOption
   const [name, setName] = useState("");
   const [role, setRole] = useState("");
   const [message, setMessage] = useState("");
-  const [consent, setConsent] = useState(false);
   const [status, setStatus] = useState("");
   const [loadError, setLoadError] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,7 +47,7 @@ export default function TestimonialsSection({ members }: { members: MemberOption
       const response = await fetch("/api/testimoni", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ memberSlug, projectTitle, name, role, message, consent }),
+        body: JSON.stringify({ memberSlug, projectTitle, name, role, message }),
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Testimoni gagal dikirim.");
@@ -58,7 +57,6 @@ export default function TestimonialsSection({ members }: { members: MemberOption
       setName("");
       setRole("");
       setMessage("");
-      setConsent(false);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Testimoni gagal dikirim.");
     } finally {
@@ -121,10 +119,6 @@ export default function TestimonialsSection({ members }: { members: MemberOption
             <textarea value={message} onChange={(event) => setMessage(event.target.value)} minLength={5} maxLength={1000} rows={5} required />
           </label>
         </div>
-        <label className="consent-field">
-          <input type="checkbox" checked={consent} onChange={(event) => setConsent(event.target.checked)} required />
-          <span>Saya mengizinkan testimoni ini ditampilkan di website setelah ditinjau admin.</span>
-        </label>
         <button className="main-button" type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Mengirim…" : "Kirim untuk ditinjau"}
         </button>

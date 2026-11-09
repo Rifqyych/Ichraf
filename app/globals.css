@@ -1423,22 +1423,6 @@ h3 {
   grid-column: 1 / -1;
 }
 
-.consent-field {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  margin: 18px 0;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.consent-field input {
-  flex: 0 0 auto;
-  width: 17px;
-  height: 17px;
-  margin: 0;
-}
-
 .testimonial-form .main-button {
   margin-top: 0;
   border: 0;

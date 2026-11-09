@@ -35,8 +35,8 @@ export async function POST(request: Request) {
   const message = typeof data.message === "string" ? data.message.trim() : "";
   const projectTitle = typeof data.projectTitle === "string" && data.projectTitle ? data.projectTitle : null;
 
-  if (!member || !name || name.length > 80 || role.length > 100 || message.length < 5 || message.length > 1000 || data.consent !== true) {
-    return NextResponse.json({ error: "Periksa kembali isian dan persetujuan publikasi." }, { status: 400 });
+  if (!member || !name || name.length > 80 || role.length > 100 || message.length < 5 || message.length > 1000) {
+    return NextResponse.json({ error: "Periksa kembali isian formulir." }, { status: 400 });
   }
   if (projectTitle && !member.projects.some((project) => project.title === projectTitle)) {
     return NextResponse.json({ error: "Project yang dipilih tidak valid." }, { status: 400 });
