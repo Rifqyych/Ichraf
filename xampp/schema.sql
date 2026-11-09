@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS testimonials (
   name VARCHAR(80) NOT NULL,
   role VARCHAR(100) NOT NULL DEFAULT '',
   message VARCHAR(1000) NOT NULL,
-  status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
+  status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'approved',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   INDEX testimonials_status_created_at (status, created_at)
 );

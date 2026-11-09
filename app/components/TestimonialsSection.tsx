@@ -72,8 +72,13 @@ export default function TestimonialsSection({ members }: { members: MemberOption
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.error ?? "Testimoni gagal dikirim.");
+      if (!result.testimonial) throw new Error("Testimoni terkirim, tetapi belum bisa ditampilkan. Muat ulang halaman.");
 
-      setStatus("Terima kasih! Testimoni terkirim dan akan tampil setelah disetujui admin.");
+      setTestimonials((current) => [
+        result.testimonial as Testimonial,
+        ...current.filter((item) => item.id !== result.testimonial.id),
+      ]);
+      setStatus("Terima kasih! Testimoni langsung tampil di website.");
       setProjectTitle("");
       setName("");
       setRole("");
@@ -101,8 +106,8 @@ export default function TestimonialsSection({ members }: { members: MemberOption
           );
         }) : (
           <div className="empty-content-card">
-            <strong>{loadError ? "Penyimpanan testimoni belum disiapkan." : "Belum ada testimoni yang disetujui."}</strong>
-            <p>{loadError ? "Admin perlu menghubungkan database sebelum formulir dapat menerima kiriman." : "Testimoni yang dikirim akan ditampilkan di sini setelah diperiksa admin."}</p>
+            <strong>{loadError ? "Penyimpanan testimoni belum disiapkan." : "Belum ada testimoni."}</strong>
+            <p>{loadError ? "Admin perlu menghubungkan database sebelum formulir dapat menerima kiriman." : "Testimoni yang dikirim akan langsung ditampilkan di sini."}</p>
           </div>
         )}
       </div>
@@ -110,7 +115,7 @@ export default function TestimonialsSection({ members }: { members: MemberOption
       <form className="testimonial-form" onSubmit={handleSubmit}>
         <p className="eyebrow">KIRIM TESTIMONI</p>
         <h3>Ceritakan pengalamanmu.</h3>
-        <p className="form-intro">Kiriman akan ditinjau admin. Setelah disetujui, testimoni muncul otomatis dalam beberapa detik.</p>
+        <p className="form-intro">Testimoni akan langsung tampil di website setelah dikirim.</p>
         <div className="form-grid">
           <label>
             Untuk anggota
@@ -141,7 +146,7 @@ export default function TestimonialsSection({ members }: { members: MemberOption
           </label>
         </div>
         <button className="main-button" type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Mengirim…" : "Kirim untuk ditinjau"}
+          {isSubmitting ? "Mengirim…" : "Kirim testimoni"}
         </button>
         {status && <p className="form-status" role="status">{status}</p>}
       </form>

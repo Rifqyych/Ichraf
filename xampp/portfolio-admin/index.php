@@ -80,7 +80,7 @@ if (!empty($_SESSION['admin_logged_in']) && $pdo instanceof PDO) {
     <section class="intro">
       <p class="eyebrow">PANEL ADMIN</p>
       <h1>Kelola testimoni.</h1>
-      <p>Kiriman publik baru tidak tampil sampai kamu menyetujuinya.</p>
+      <p>Testimoni baru langsung tampil di website. Panel ini hanya menampilkan kiriman lama yang masih menunggu.</p>
     </section>
 
     <?php if ($error !== ''): ?><div class="notice error"><?= h($error) ?></div><?php endif; ?>
@@ -101,9 +101,9 @@ if (!empty($_SESSION['admin_logged_in']) && $pdo instanceof PDO) {
         <input type="hidden" name="action" value="logout">
         <button class="button-secondary" type="submit">Keluar</button>
       </form>
-      <div class="queue-heading"><h2>Menunggu persetujuan</h2><span><?= count($pending) ?> kiriman</span></div>
+      <div class="queue-heading"><h2>Kiriman lama yang masih menunggu</h2><span><?= count($pending) ?> kiriman</span></div>
       <?php if ($pending === []): ?>
-        <div class="card empty"><strong>Belum ada kiriman baru.</strong><p>Kiriman dari form testimoni website user muncul di sini.</p></div>
+        <div class="card empty"><strong>Tidak ada kiriman lama yang menunggu.</strong><p>Testimoni baru langsung tampil di website user.</p></div>
       <?php else: ?>
         <div class="pending-list">
           <?php foreach ($pending as $item): ?>

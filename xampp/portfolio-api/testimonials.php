@@ -69,7 +69,7 @@ if ($projectTitle !== '' && !in_array($projectTitle, $allowedMembers[$memberSlug
 
 $insert = $pdo->prepare(
     "INSERT INTO testimonials (member_slug, project_title, name, role, message, status)
-     VALUES (:member_slug, :project_title, :name, :role, :message, 'pending')"
+     VALUES (:member_slug, :project_title, :name, :role, :message, 'approved')"
 );
 $insert->execute([
     'member_slug' => $memberSlug,
@@ -79,4 +79,13 @@ $insert->execute([
     'message' => $message,
 ]);
 
-portfolio_json(['ok' => true], 201);
+$testimonial = [
+    'id' => (string) $pdo->lastInsertId(),
+    'member_slug' => $memberSlug,
+    'project_title' => $projectTitle !== '' ? $projectTitle : null,
+    'name' => $name,
+    'role' => $role,
+    'message' => $message,
+];
+
+portfolio_json(['ok' => true, 'testimonial' => $testimonial], 201);

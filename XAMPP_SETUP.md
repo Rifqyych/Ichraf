@@ -21,9 +21,9 @@ Konfigurasi ini untuk demo lokal di komputer kamu. Website user berjalan di Next
 
 - Website user: jalankan `npm run dev`, lalu buka `http://localhost:3000`.
 - Website admin terpisah: buka `http://localhost/portfolio-admin/`.
-- Kiriman testimoni disimpan di MySQL XAMPP. Admin masuk menggunakan username `admin` dan kata sandi yang diisi di `config.php`, lalu menyetujui atau menolak kiriman.
+- Kiriman testimoni disimpan dan langsung ditampilkan dari MySQL XAMPP. Admin tidak perlu menyetujui kiriman.
 
-Admin tidak ditautkan dari navbar website user. Kiriman yang disetujui akan muncul pada bagian Testimoni setelah halaman dimuat ulang.
+Admin tetap terpisah dari website user dan tidak ditautkan dari navbar. Halaman testimoni memuat pembaruan secara otomatis.
 
 Jika XAMPP terpasang selain di `C:\xampp`, atur `XAMPP_HOME` sebelum menjalankan script. Jika Apache menggunakan port selain 80, ubah URL API pada `.env.local`, contohnya:
 
