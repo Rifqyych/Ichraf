@@ -21,6 +21,7 @@ Konfigurasi ini untuk demo lokal di komputer kamu. Website user berjalan di Next
 
 - Website user: jalankan `npm run dev`, lalu buka `http://localhost:3000`.
 - Website admin terpisah: buka `http://localhost/portfolio-admin/`. Admin dapat mengedit profil dan skill, mengelola proyek dan sertifikat, serta menghapus testimoni.
+- Foto profil dapat diunggah sebagai JPG, PNG, atau WebP. File sertifikat dapat diunggah sebagai PDF atau gambar; batas ukuran masing-masing 12 MB. File disimpan lokal di `C:\xampp\htdocs\portfolio-api\uploads` dan tidak masuk GitHub.
 - Kiriman testimoni disimpan dan langsung ditampilkan dari MySQL XAMPP. Admin tidak perlu menyetujui kiriman.
 
 Admin tetap terpisah dari website user dan tidak ditautkan dari navbar. Halaman testimoni memuat pembaruan secara otomatis.

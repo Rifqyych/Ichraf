@@ -1,6 +1,12 @@
 <?php
 require_once __DIR__ . '/bootstrap.php';
 
+$publicAssetUrl = static function (?string $path): ?string {
+    if (!$path) return null;
+    if (str_starts_with($path, '/portfolio-api/uploads/')) return 'http://localhost' . $path;
+    return $path;
+};
+
 try {
     $pdo = portfolio_db();
     $members = [];
@@ -10,7 +16,7 @@ try {
             'name' => $row['name'],
             'role' => $row['role'],
             'initials' => $row['initials'],
-            'photo' => $row['photo'],
+            'photo' => $publicAssetUrl($row['photo']),
             'color' => $row['color'],
             'about' => $row['about'],
             'contactUrl' => $row['contact_url'] ?: null,
@@ -47,7 +53,7 @@ try {
                 'title' => $row['title'],
                 'issuer' => $row['issuer'],
                 'date' => $row['date_label'],
-                'url' => $row['url'] ?: null,
+                'url' => $publicAssetUrl($row['url']),
             ];
         }
     }

@@ -27,6 +27,45 @@ function optional_url(string $value): ?string
     return $value;
 }
 
+function upload_file(string $field, bool $allowPdf): ?string
+{
+    $file = $_FILES[$field] ?? null;
+    if (!is_array($file) || ($file['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) return null;
+    if (($file['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($file['tmp_name'] ?? '')) {
+        throw new RuntimeException('Unggahan gagal. Pilih file kembali dan pastikan ukurannya sesuai batas PHP.');
+    }
+    if (($file['size'] ?? 0) < 1 || $file['size'] > 12 * 1024 * 1024) {
+        throw new RuntimeException('Ukuran file maksimal 12 MB.');
+    }
+
+    $mime = (new finfo(FILEINFO_MIME_TYPE))->file($file['tmp_name']);
+    $allowed = ['image/jpeg' => 'jpg', 'image/png' => 'png', 'image/webp' => 'webp'];
+    if ($allowPdf) $allowed['application/pdf'] = 'pdf';
+    if (!isset($allowed[$mime])) {
+        throw new RuntimeException($allowPdf ? 'File sertifikat harus berupa PDF, JPG, PNG, atau WebP.' : 'Foto profil harus berupa JPG, PNG, atau WebP.');
+    }
+
+    $directory = dirname(__DIR__) . '/portfolio-api/uploads';
+    if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
+        throw new RuntimeException('Folder unggahan XAMPP tidak dapat dibuat.');
+    }
+    if (!is_writable($directory)) throw new RuntimeException('Folder unggahan XAMPP tidak memiliki izin tulis.');
+
+    $filename = bin2hex(random_bytes(16)) . '.' . $allowed[$mime];
+    if (!move_uploaded_file($file['tmp_name'], $directory . '/' . $filename)) {
+        throw new RuntimeException('File tidak bisa disimpan ke folder unggahan XAMPP.');
+    }
+    return '/portfolio-api/uploads/' . $filename;
+}
+
+function public_asset_url(?string $path): ?string
+{
+    if (!$path) return null;
+    if (str_starts_with($path, '/portfolio-api/uploads/')) return 'http://localhost' . $path;
+    if (str_starts_with($path, '/images/')) return 'http://localhost:3000' . $path;
+    return $path;
+}
+
 function csrf_field(): string
 {
     return '<input type="hidden" name="csrf" value="' . h($_SESSION['csrf']) . '">';
@@ -76,7 +115,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $name = post_text('name', 80);
                 $role = post_text('role', 160);
                 $initials = post_text('initials', 8);
-                $photo = post_text('photo', 500);
                 $color = post_text('color', 16);
                 $about = post_text('about', 2000);
                 $contactUrl = optional_url(post_text('contact_url', 500));
@@ -84,9 +122,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if (!in_array($slug, ['zaki', 'rifqy'], true) || $name === '' || $role === '' || $about === '') {
                     throw new RuntimeException('Nama, peran, dan deskripsi anggota wajib diisi.');
                 }
-                if (!preg_match('#^/images/(?!.*\.\.)[A-Za-z0-9._/-]+$#', $photo) || !in_array($color, ['orange', 'blue'], true)) {
-                    throw new RuntimeException('Foto harus memakai path lokal /images/ dan warna harus valid.');
-                }
+                if (!in_array($color, ['orange', 'blue'], true)) throw new RuntimeException('Warna profil tidak valid.');
+                $existingPhoto = $pdo->prepare('SELECT photo FROM team_members WHERE slug=:slug');
+                $existingPhoto->execute(['slug' => $slug]);
+                $photo = upload_file('profile_photo', false) ?? $existingPhoto->fetchColumn();
+                if (!is_string($photo) || $photo === '') throw new RuntimeException('Foto profil saat ini tidak tersedia. Unggah foto baru.');
                 $pdo->beginTransaction();
                 $update = $pdo->prepare('UPDATE team_members SET name=:name, role=:role, initials=:initials, photo=:photo, color=:color, about=:about, contact_url=:contact_url WHERE slug=:slug');
                 $update->execute(['name' => $name, 'role' => $role, 'initials' => $initials, 'photo' => $photo, 'color' => $color, 'about' => $about, 'contact_url' => $contactUrl, 'slug' => $slug]);
@@ -135,10 +175,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $title = post_text('title', 180);
                 $issuer = post_text('issuer', 180);
                 $dateLabel = post_text('date_label', 80);
-                $url = optional_url(post_text('url', 500));
                 if (!in_array($memberSlug, ['zaki', 'rifqy'], true) || $title === '' || $issuer === '' || $dateLabel === '') {
                     throw new RuntimeException('Anggota, nama sertifikat, penyelenggara, dan tanggal wajib diisi.');
                 }
+                $existingUrl = null;
+                if ($id) {
+                    $existingFile = $pdo->prepare('SELECT url FROM certificates WHERE id=:id');
+                    $existingFile->execute(['id' => $id]);
+                    $existingUrl = $existingFile->fetchColumn() ?: null;
+                }
+                $url = upload_file('certificate_file', true) ?? $existingUrl;
+                if (!$id && !$url) throw new RuntimeException('Pilih file sertifikat berupa PDF atau gambar.');
                 if ($id) {
                     $stmt = $pdo->prepare('UPDATE certificates SET member_slug=:member_slug, title=:title, issuer=:issuer, date_label=:date_label, url=:url WHERE id=:id');
                     $stmt->execute(['member_slug' => $memberSlug, 'title' => $title, 'issuer' => $issuer, 'date_label' => $dateLabel, 'url' => $url, 'id' => $id]);
@@ -245,7 +292,7 @@ $loggedIn = !empty($_SESSION['admin_logged_in']);
         <div class="section-heading"><div><p class="eyebrow">01 · ANGGOTA</p><h2>Profil dan skill</h2></div><span><?= count($members) ?> anggota</span></div>
         <div class="editor-grid">
           <?php foreach ($members as $member): ?>
-            <form class="card editor-card" method="post">
+            <form class="card editor-card" method="post" enctype="multipart/form-data">
               <?= csrf_field() ?><input type="hidden" name="action" value="save_member"><input type="hidden" name="slug" value="<?= h($member['slug']) ?>">
               <h3><?= h($member['name']) ?></h3>
               <div class="field-grid">
@@ -253,7 +300,7 @@ $loggedIn = !empty($_SESSION['admin_logged_in']);
                 <label>Peran<input name="role" value="<?= h($member['role']) ?>" maxlength="160" required></label>
                 <label>Inisial<input name="initials" value="<?= h($member['initials']) ?>" maxlength="8" required></label>
                 <label>Warna kartu<select name="color"><option value="orange" <?= $member['color'] === 'orange' ? 'selected' : '' ?>>Oranye</option><option value="blue" <?= $member['color'] === 'blue' ? 'selected' : '' ?>>Biru</option></select></label>
-                <label class="field-full">Foto (path di folder public)<input name="photo" value="<?= h($member['photo']) ?>" placeholder="/images/nama.png" required></label>
+                <div class="field-full upload-field"><span class="field-label">Foto profil saat ini</span><img class="current-photo" src="<?= h(public_asset_url($member['photo'])) ?>" alt="Foto <?= h($member['name']) ?>"><label>Unggah foto baru (JPG, PNG, atau WebP)<input type="file" name="profile_photo" accept="image/jpeg,image/png,image/webp"></label><small>Kosongkan jika ingin mempertahankan foto saat ini. Maksimal 12 MB.</small></div>
                 <label class="field-full">Tentang<textarea name="about" rows="4" maxlength="2000" required><?= h($member['about']) ?></textarea></label>
                 <label class="field-full">Skill (pisahkan dengan koma atau baris baru)<textarea name="skills" rows="3" maxlength="2000"><?= h(implode(', ', $member['skills'] ?? [])) ?></textarea></label>
                 <label class="field-full">Tautan kontak<input type="url" name="contact_url" value="<?= h($member['contact_url']) ?>" placeholder="https://..."></label>
@@ -290,7 +337,7 @@ $loggedIn = !empty($_SESSION['admin_logged_in']);
 
       <section class="admin-section" id="certificates">
         <div class="section-heading"><div><p class="eyebrow">03 · PENCAPAIAN</p><h2>Sertifikat</h2></div><span><?= count($certificates) ?> sertifikat</span></div>
-        <form class="card editor-card" method="post">
+        <form class="card editor-card" method="post" enctype="multipart/form-data">
           <?= csrf_field() ?><input type="hidden" name="action" value="save_certificate"><input type="hidden" name="id" value="<?= h((string) ($editingCertificate['id'] ?? '')) ?>">
           <h3><?= $editingCertificate ? 'Edit sertifikat' : 'Tambah sertifikat' ?></h3>
           <div class="field-grid">
@@ -298,13 +345,13 @@ $loggedIn = !empty($_SESSION['admin_logged_in']);
             <label>Nama sertifikat<input name="title" value="<?= h($editingCertificate['title'] ?? '') ?>" maxlength="180" required></label>
             <label>Penyelenggara<input name="issuer" value="<?= h($editingCertificate['issuer'] ?? '') ?>" maxlength="180" required></label>
             <label>Tanggal / tahun<input name="date_label" value="<?= h($editingCertificate['date_label'] ?? '') ?>" maxlength="80" placeholder="2026" required></label>
-            <label class="field-full">Tautan sertifikat<input type="url" name="url" value="<?= h($editingCertificate['url'] ?? '') ?>" placeholder="https://..."></label>
+            <div class="field-full upload-field"><span class="field-label">File sertifikat (PDF, JPG, PNG, atau WebP)</span><?php if (!empty($editingCertificate['url'])): ?><a class="section-help" href="<?= h(public_asset_url($editingCertificate['url'])) ?>" target="_blank" rel="noreferrer">Lihat file saat ini</a><?php endif; ?><input type="file" name="certificate_file" accept="application/pdf,image/jpeg,image/png,image/webp" <?= $editingCertificate ? '' : 'required' ?>><small><?= $editingCertificate ? 'Pilih file baru hanya jika ingin mengganti file saat ini.' : 'Ukuran maksimal 12 MB.' ?></small></div>
           </div>
           <div class="actions"><button type="submit"><?= $editingCertificate ? 'Simpan perubahan' : 'Tambah sertifikat' ?></button><?php if ($editingCertificate): ?><a class="button-secondary button-link" href="#certificates">Batal edit</a><?php endif; ?></div>
         </form>
         <div class="record-list">
           <?php foreach ($certificates as $certificate): ?>
-            <article class="card record-card"><div><p class="eyebrow"><?= h($certificate['member_slug']) ?> · <?= h($certificate['date_label']) ?></p><h3><?= h($certificate['title']) ?></h3><p><?= h($certificate['issuer']) ?></p></div><div class="actions"><a class="button-secondary button-link" href="?edit_certificate=<?= (int) $certificate['id'] ?>#certificates">Edit</a><form method="post" onsubmit="return confirm('Hapus sertifikat ini?')"><?= csrf_field() ?><input type="hidden" name="action" value="delete_certificate"><input type="hidden" name="id" value="<?= (int) $certificate['id'] ?>"><button class="danger-button" type="submit">Hapus</button></form></div></article>
+            <article class="card record-card"><div><p class="eyebrow"><?= h($certificate['member_slug']) ?> · <?= h($certificate['date_label']) ?></p><h3><?= h($certificate['title']) ?></h3><p><?= h($certificate['issuer']) ?></p><?php if (!empty($certificate['url'])): ?><a class="section-link" href="<?= h(public_asset_url($certificate['url'])) ?>" target="_blank" rel="noreferrer">Buka file sertifikat →</a><?php endif; ?></div><div class="actions"><a class="button-secondary button-link" href="?edit_certificate=<?= (int) $certificate['id'] ?>#certificates">Edit</a><form method="post" onsubmit="return confirm('Hapus sertifikat ini?')"><?= csrf_field() ?><input type="hidden" name="action" value="delete_certificate"><input type="hidden" name="id" value="<?= (int) $certificate['id'] ?>"><button class="danger-button" type="submit">Hapus</button></form></div></article>
           <?php endforeach; ?>
           <?php if ($certificates === []): ?><div class="card empty"><strong>Belum ada sertifikat.</strong><p>Tambahkan sertifikat dari formulir di atas.</p></div><?php endif; ?>
         </div>
