@@ -4,6 +4,7 @@ export type Project = {
   category: string;
   description: string;
   tools: string[];
+  repositoryUrl?: string;
 };
 
 export type TeamMember = {
@@ -11,6 +12,7 @@ export type TeamMember = {
   name: string;
   role: string;
   initials: string;
+  photo: string;
   color: string;
   about: string;
   skills: string[];
@@ -19,13 +21,14 @@ export type TeamMember = {
 
 export const members: TeamMember[] = [
   {
-    slug: "asraf",
-    name: "Asraf",
+    slug: "zaki",
+    name: "Zaki",
     role: "Siswa Rekayasa Perangkat Lunak (RPL)",
-    initials: "AS",
-    color: "blue",
+    initials: "ZK",
+    photo: "/images/asraf.png",
+    color: "orange",
     about:
-      "Asraf adalah siswa RPL yang sedang memperkuat basic RPL, terutama pembuatan website, logika pemrograman, dan pengelolaan kode menggunakan Git.",
+      "Zaki adalah siswa RPL yang sedang memperkuat basic RPL, terutama pembuatan website, logika pemrograman, dan pengelolaan kode menggunakan Git.",
     skills: ["Basic RPL", "HTML", "CSS", "JavaScript", "Git", "UI Dasar"],
     projects: [
       {
@@ -55,13 +58,14 @@ export const members: TeamMember[] = [
     ],
   },
   {
-    slug: "ichwan",
-    name: "Ichwan",
+    slug: "rifqy",
+    name: "Rifqy",
     role: "Siswa Rekayasa Perangkat Lunak (RPL)",
-    initials: "IC",
-    color: "orange",
+    initials: "RF",
+    photo: "/images/ichwan.png",
+    color: "blue",
     about:
-      "Ichwan adalah siswa RPL yang mempelajari basic RPL melalui pembuatan antarmuka website, aplikasi sederhana, dan latihan pemrograman JavaScript.",
+      "Rifqy adalah siswa RPL yang mempelajari basic RPL melalui pembuatan antarmuka website, aplikasi sederhana, dan latihan pemrograman JavaScript.",
     skills: ["Basic RPL", "HTML", "CSS", "JavaScript", "UI Design", "Git"],
     projects: [
       {
@@ -82,11 +86,12 @@ export const members: TeamMember[] = [
       },
       {
         number: "03",
-        title: "Perpustakaan Digital Mini",
-        category: "Web App",
+        title: "Website Kursus DKAcademy",
+        category: "Laravel Web App",
         description:
-          "Prototype katalog buku digital dengan fitur pencarian buku dan tampilan status buku yang tersedia atau sedang dipinjam.",
-        tools: ["HTML", "CSS", "JavaScript", "Data Array"],
+          "Platform website kursus untuk menampilkan program pembelajaran dan informasi kursus, dibangun menggunakan framework Laravel.",
+        tools: ["Laravel", "PHP", "MySQL", "Blade", "Bootstrap"],
+        repositoryUrl: "https://github.com/Rifqyych/dkacademy",
       },
     ],
   },

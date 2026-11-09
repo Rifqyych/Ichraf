@@ -1196,6 +1196,23 @@ h3 {
   text-align: center;
 }
 
+.project-repository-link {
+  display: inline-block;
+  margin-top: 22px;
+  padding: 10px 14px;
+  border: 2px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 4px 4px 0 var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.project-repository-link:hover {
+  box-shadow: 7px 7px 0 var(--ink);
+  transform: translate(-2px, -2px);
+}
+
 @media (max-width: 720px){
   .comment-button{
     width: 100%;

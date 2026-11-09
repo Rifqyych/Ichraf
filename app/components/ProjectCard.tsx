@@ -8,6 +8,7 @@ category: string;
 title: string;
 description: string;
 tools: string[];
+repositoryUrl?: string;
 };
 
 type CommentItem = {
@@ -22,6 +23,7 @@ category,
 title,
 description,
 tools,
+repositoryUrl,
 }: ProjectCardProps) {
 const [isOpen, setIsOpen] = useState(false);
 
@@ -148,6 +150,17 @@ onClick={() => setIsOpen(true)}
             <span key={tool}>{tool}</span>
           ))}
         </div>
+
+        {repositoryUrl && (
+          <a
+            className="project-repository-link"
+            href={repositoryUrl}
+            target="_blank"
+            rel="noreferrer"
+          >
+            Lihat repository GitHub &rarr;
+          </a>
+        )}
 
         <div className="like-section">
           <div className="like-title">

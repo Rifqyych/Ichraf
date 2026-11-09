@@ -24,7 +24,7 @@ export default async function MemberProfilePage({ params }: PageProps) {
       <section className={`member-profile-hero ${member.color}`}>
         <div className="profile-photo-large">
           <Image
-            src={`/images/${member.slug}.png`}
+            src={member.photo}
             alt={member.name}
             width={320}
             height={320}

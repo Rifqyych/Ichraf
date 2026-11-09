@@ -23,7 +23,7 @@ export default function ProfilePage() {
           >
             <div className="profile-photo">
               <Image
-                src={`/images/${member.slug}.png`}
+                src={member.photo}
                 alt={member.name}
                 width={58}
                 height={58}

@@ -16,8 +16,8 @@ export default function HomePage() {
           </h1>
 
           <p className="hero-text">
-            Website ini berisi profil dan kumpulan project dari Asraf dan
-            Ichwan, siswa Rekayasa Perangkat Lunak.
+            Website ini berisi profil dan kumpulan project dari Zaki dan Rifqy,
+            siswa Rekayasa Perangkat Lunak.
           </p>
 
           <Link className="main-button" href="/portofolio">
@@ -51,7 +51,7 @@ export default function HomePage() {
 
               <div className="member-photo">
                 <Image
-                  src={`/images/${member.slug}.png`}
+                  src={member.photo}
                   alt={member.name}
                   width={150}
                   height={150}

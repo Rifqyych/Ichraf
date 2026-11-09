@@ -4,7 +4,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Portfolio Team RPL",
-  description: "Portfolio Asraf dan Ichwan",
+  description: "Portfolio Zaki dan Rifqy",
 };
 
 export default function RootLayout({
@@ -35,7 +35,7 @@ export default function RootLayout({
 
         <footer className="site-footer">
           <div className="container">
-            <p>Portfolio Team RPL — Asraf & Ichwan</p>
+            <p>Portfolio Team RPL — Zaki & Rifqy</p>
           </div>
         </footer>
       </body>

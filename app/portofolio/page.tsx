@@ -21,7 +21,7 @@ export default function PortofolioPage() {
           >
             <div className="portfolio-person-info">
               <Image
-                src={`/images/${member.slug}.png`}
+                src={member.photo}
                 alt={member.name}
                 width={70}
                 height={70}
