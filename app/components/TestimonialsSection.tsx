@@ -32,13 +32,31 @@ export default function TestimonialsSection({ members }: { members: MemberOption
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    fetch(testimonialsApiUrl, { cache: "no-store" })
-      .then(async (response) => {
-        if (!response.ok) throw new Error("Not available");
-        return response.json();
-      })
-      .then((data: Testimonial[]) => setTestimonials(data))
-      .catch(() => setLoadError(true));
+    let isActive = true;
+
+    async function loadTestimonials() {
+      try {
+        const response = await fetch(testimonialsApiUrl, { cache: "no-store" });
+        if (!response.ok) throw new Error("Testimoni tidak dapat dimuat.");
+        const data: Testimonial[] = await response.json();
+        if (isActive) {
+          setTestimonials(data);
+          setLoadError(false);
+        }
+      } catch {
+        if (isActive) setLoadError(true);
+      }
+    }
+
+    void loadTestimonials();
+    const refreshTimer = window.setInterval(loadTestimonials, 5000);
+    window.addEventListener("focus", loadTestimonials);
+
+    return () => {
+      isActive = false;
+      window.clearInterval(refreshTimer);
+      window.removeEventListener("focus", loadTestimonials);
+    };
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -92,7 +110,7 @@ export default function TestimonialsSection({ members }: { members: MemberOption
       <form className="testimonial-form" onSubmit={handleSubmit}>
         <p className="eyebrow">KIRIM TESTIMONI</p>
         <h3>Ceritakan pengalamanmu.</h3>
-        <p className="form-intro">Kiriman akan ditinjau admin dan hanya ditampilkan setelah disetujui.</p>
+        <p className="form-intro">Kiriman akan ditinjau admin. Setelah disetujui, testimoni muncul otomatis dalam beberapa detik.</p>
         <div className="form-grid">
           <label>
             Untuk anggota
