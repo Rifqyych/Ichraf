@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { members } from "../data/team";
+import { getTeamMembers } from "../data/getTeamMembers";
 
-export default function ProfilePage() {
+export default async function ProfilePage() {
+  const members = await getTeamMembers();
+
   return (
     <main className="listing-page container">
       <p className="eyebrow">PROFIL TIM</p>

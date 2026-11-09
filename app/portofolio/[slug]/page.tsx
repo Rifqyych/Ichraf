@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ProjectCard from "../../components/ProjectCard";
-import { getMember, members } from "../../data/team";
+import { members } from "../../data/team";
+import { getTeamMember } from "../../data/getTeamMembers";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -13,7 +14,7 @@ export function generateStaticParams() {
 
 export default async function MemberPortofolioPage({ params }: PageProps) {
   const { slug } = await params;
-  const member = getMember(slug);
+  const member = await getTeamMember(slug);
 
   if (!member) {
     notFound();
@@ -37,7 +38,7 @@ export default async function MemberPortofolioPage({ params }: PageProps) {
       <section className="project-grid">
         {member.projects.map((project) => (
           <ProjectCard
-            key={project.number}
+            key={`${project.number}-${project.title}`}
             number={project.number}
             category={project.category}
             title={project.title}

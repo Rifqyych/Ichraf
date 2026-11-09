@@ -2,7 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import CvPrintButton from "../../components/CvPrintButton";
-import { getMember, members } from "../../data/team";
+import { members } from "../../data/team";
+import { getTeamMember } from "../../data/getTeamMembers";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -14,7 +15,7 @@ export function generateStaticParams() {
 
 export default async function CvPage({ params }: PageProps) {
   const { slug } = await params;
-  const member = getMember(slug);
+  const member = await getTeamMember(slug);
 
   if (!member) notFound();
 
@@ -65,7 +66,7 @@ export default async function CvPage({ params }: PageProps) {
           <h2>Project</h2>
           <div className="cv-projects">
             {member.projects.map((project) => (
-              <article key={project.number}>
+              <article key={`${project.number}-${project.title}`}>
                 <h3>{project.title}</h3>
                 <p>{project.description}</p>
                 <p className="muted-note">Teknologi: {project.tools.join(", ")}</p>

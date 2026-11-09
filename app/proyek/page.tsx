@@ -1,45 +1,30 @@
-// Halaman ini mengambil data dari API buatan sendiri (app/api/proyek/route.ts)
-
-type Proyek = {
-  id: number;
-  judul: string;
-  teknologi: string;
-  selesai: boolean;
-};
+import Link from "next/link";
+import { getTeamMembers } from "../data/getTeamMembers";
 
 export default async function ProyekPage() {
-  // Fetch dari API sendiri, bukan dari JSONPlaceholder
-  const response = await fetch('http://localhost:3000/api/proyek', {
-    cache: 'no-store',
-  });
-  const daftarProyek: Proyek[] = await response.json();
+  const members = await getTeamMembers();
+  const projects = members.flatMap((member) =>
+    member.projects.map((project) => ({ ...project, memberName: member.name, memberSlug: member.slug })),
+  );
 
   return (
     <main className="container listing-page">
-      <p className="eyebrow">BACKEND SENDIRI</p>
-      <h1>Daftar Proyek Kami</h1>
-      <p className="page-description">
-        Data di bawah ini diambil dari API buatan sendiri di{' '}
-        <code>/api/proyek</code>, bukan dari internet.
-      </p>
+      <p className="eyebrow">PORTOFOLIO TIM</p>
+      <h1>Daftar proyek kami.</h1>
+      <p className="page-description">Proyek ini dikelola melalui panel admin dan disimpan di database XAMPP.</p>
 
-      <div className="project-grid" style={{ marginTop: '42px' }}>
-        {daftarProyek.map((proyek) => (
-          <div key={proyek.id} className="detail-card">
-            <h2>{proyek.judul}</h2>
-            <p>Teknologi: {proyek.teknologi}</p>
-            <span
-              className="popular-badge"
-              style={{
-                display: 'inline-block',
-                marginTop: '14px',
-                background: proyek.selesai ? '#3156db' : '#f26a3d',
-                color: '#fff',
-              }}
-            >
-              {proyek.selesai ? 'Selesai' : 'Dalam Proses'}
-            </span>
-          </div>
+      <div className="project-grid" style={{ marginTop: "42px" }}>
+        {projects.map((project) => (
+          <article key={`${project.memberName}-${project.number}-${project.title}`} className="detail-card">
+            <p className="eyebrow">{project.memberName} · {project.category}</p>
+            <h2>{project.title}</h2>
+            <p>{project.description}</p>
+            <p>Teknologi: {project.tools.join(", ")}</p>
+            {project.linkUrl && <a className="section-link" href={project.linkUrl} target="_blank" rel="noreferrer">{project.linkLabel ?? project.linkUrl} →</a>}
+            <Link className="section-link" href={`/portofolio/${project.memberSlug}`}>
+              Lihat portofolio →
+            </Link>
+          </article>
         ))}
       </div>
     </main>

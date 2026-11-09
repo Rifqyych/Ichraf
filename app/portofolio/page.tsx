@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
-import { members } from "../data/team";
+import { getTeamMembers } from "../data/getTeamMembers";
 
-export default function PortofolioPage() {
+export default async function PortofolioPage() {
+  const members = await getTeamMembers();
+
   return (
     <main className="container listing-page">
       <p className="eyebrow">PORTOFOLIO TIM</p>

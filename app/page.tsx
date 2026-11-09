@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
-import { members } from "./data/team";
+import { getTeamMembers } from "./data/getTeamMembers";
 import TestimonialsSection from "./components/TestimonialsSection";
 
-export default function HomePage() {
+export default async function HomePage() {
+  const members = await getTeamMembers();
+
   return (
     <main>
       <section className="hero container" id="intro">

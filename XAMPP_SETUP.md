@@ -11,7 +11,7 @@ Konfigurasi ini untuk demo lokal di komputer kamu. Website user berjalan di Next
    npm run db:setup
    ```
 
-   Script ini memakai `C:\xampp\mysql\bin\mysql.exe` untuk membuat database `portfolio_testimonials` dan tabel `testimonials`. Masukkan kata sandi MySQL root jika diminta; jika masih bawaan XAMPP, tekan Enter.
+   Script ini memakai `C:\xampp\mysql\bin\mysql.exe` untuk membuat database `portfolio_testimonials` dan tabel `testimonials`, `team_members`, `skills`, `projects`, dan `certificates`, lalu mengisi data awal profil dan proyek. Masukkan kata sandi MySQL root jika diminta; jika masih bawaan XAMPP, tekan Enter.
    Jika muncul `ERROR 1130 (HY000): Host 'localhost' is not allowed`, hak akses akun MariaDB XAMPP perlu diperbaiki terlebih dahulu. phpMyAdmin mengalami error host yang sama; script tidak mengubah akun MySQL.
 3. Salin folder `xampp/portfolio-api` dan `xampp/portfolio-admin` ke folder `htdocs` XAMPP. Biasanya lokasinya `C:\xampp\htdocs`; sesuaikan jika XAMPP terpasang di lokasi lain. Di komputer ini folder tersebut sudah disalin.
 4. Di `htdocs/portfolio-api`, duplikat `config.example.php` dan beri nama `config.php`.
@@ -20,7 +20,7 @@ Konfigurasi ini untuk demo lokal di komputer kamu. Website user berjalan di Next
 ## Menjalankan
 
 - Website user: jalankan `npm run dev`, lalu buka `http://localhost:3000`.
-- Website admin terpisah: buka `http://localhost/portfolio-admin/`.
+- Website admin terpisah: buka `http://localhost/portfolio-admin/`. Admin dapat mengedit profil dan skill, mengelola proyek dan sertifikat, serta menghapus testimoni.
 - Kiriman testimoni disimpan dan langsung ditampilkan dari MySQL XAMPP. Admin tidak perlu menyetujui kiriman.
 
 Admin tetap terpisah dari website user dan tidak ditautkan dari navbar. Halaman testimoni memuat pembaruan secara otomatis.

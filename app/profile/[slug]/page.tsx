@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getMember, members } from "../../data/team";
+import { members } from "../../data/team";
+import { getTeamMember } from "../../data/getTeamMembers";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -13,7 +14,7 @@ export function generateStaticParams() {
 
 export default async function MemberProfilePage({ params }: PageProps) {
   const { slug } = await params;
-  const member = getMember(slug);
+  const member = await getTeamMember(slug);
 
   if (!member) {
     notFound();

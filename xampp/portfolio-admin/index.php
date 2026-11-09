@@ -1,15 +1,35 @@
 <?php
 require_once dirname(__DIR__) . '/portfolio-api/bootstrap.php';
 
-session_set_cookie_params([
-    'httponly' => true,
-    'samesite' => 'Strict',
-]);
+session_set_cookie_params(['httponly' => true, 'samesite' => 'Strict']);
 session_start();
 
-function h(string $value): string
+function h(string|null $value): string
 {
-    return htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    return htmlspecialchars($value ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+}
+
+function post_text(string $key, int $maxLength): string
+{
+    $value = is_string($_POST[$key] ?? null) ? trim($_POST[$key]) : '';
+    if (mb_strlen($value, 'UTF-8') > $maxLength) {
+        throw new RuntimeException('Isian terlalu panjang: ' . $key . '.');
+    }
+    return $value;
+}
+
+function optional_url(string $value): ?string
+{
+    if ($value === '') return null;
+    if (!filter_var($value, FILTER_VALIDATE_URL) || !in_array(parse_url($value, PHP_URL_SCHEME), ['http', 'https'], true)) {
+        throw new RuntimeException('Tautan harus menggunakan alamat http atau https yang valid.');
+    }
+    return $value;
+}
+
+function csrf_field(): string
+{
+    return '<input type="hidden" name="csrf" value="' . h($_SESSION['csrf']) . '">';
 }
 
 if (empty($_SESSION['csrf'])) {
@@ -30,7 +50,7 @@ try {
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = is_string($_POST['csrf'] ?? null) ? $_POST['csrf'] : '';
     if (!hash_equals($_SESSION['csrf'], $token)) {
-        $error = 'Sesi formulir sudah kedaluwarsa. Muat ulang halaman dan coba lagi.';
+        $error = 'Sesi formulir kedaluwarsa. Muat ulang halaman dan coba lagi.';
     } elseif (($_POST['action'] ?? '') === 'login' && $config !== null) {
         $username = is_string($_POST['username'] ?? null) ? $_POST['username'] : '';
         $password = is_string($_POST['password'] ?? null) ? $_POST['password'] : '';
@@ -48,23 +68,143 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         session_destroy();
         header('Location: ./');
         exit;
-    } elseif (($_POST['action'] ?? '') === 'review' && !empty($_SESSION['admin_logged_in']) && $pdo instanceof PDO) {
-        $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
-        $status = $_POST['status'] ?? '';
-        if ($id && in_array($status, ['approved', 'rejected'], true)) {
-            $update = $pdo->prepare('UPDATE testimonials SET status = :status WHERE id = :id AND status = \'pending\'');
-            $update->execute(['status' => $status, 'id' => $id]);
-            $notice = $status === 'approved' ? 'Testimoni disetujui.' : 'Testimoni ditolak.';
-        } else {
-            $error = 'Permintaan peninjauan tidak valid.';
+    } elseif (!empty($_SESSION['admin_logged_in']) && $pdo instanceof PDO) {
+        try {
+            $action = is_string($_POST['action'] ?? null) ? $_POST['action'] : '';
+            if ($action === 'save_member') {
+                $slug = post_text('slug', 32);
+                $name = post_text('name', 80);
+                $role = post_text('role', 160);
+                $initials = post_text('initials', 8);
+                $photo = post_text('photo', 500);
+                $color = post_text('color', 16);
+                $about = post_text('about', 2000);
+                $contactUrl = optional_url(post_text('contact_url', 500));
+                $skills = array_values(array_unique(array_filter(array_map('trim', preg_split('/[,\r\n]+/', post_text('skills', 2000)) ?: []))));
+                if (!in_array($slug, ['zaki', 'rifqy'], true) || $name === '' || $role === '' || $about === '') {
+                    throw new RuntimeException('Nama, peran, dan deskripsi anggota wajib diisi.');
+                }
+                if (!preg_match('#^/images/(?!.*\.\.)[A-Za-z0-9._/-]+$#', $photo) || !in_array($color, ['orange', 'blue'], true)) {
+                    throw new RuntimeException('Foto harus memakai path lokal /images/ dan warna harus valid.');
+                }
+                $pdo->beginTransaction();
+                $update = $pdo->prepare('UPDATE team_members SET name=:name, role=:role, initials=:initials, photo=:photo, color=:color, about=:about, contact_url=:contact_url WHERE slug=:slug');
+                $update->execute(['name' => $name, 'role' => $role, 'initials' => $initials, 'photo' => $photo, 'color' => $color, 'about' => $about, 'contact_url' => $contactUrl, 'slug' => $slug]);
+                $pdo->prepare('DELETE FROM skills WHERE member_slug=:slug')->execute(['slug' => $slug]);
+                $insertSkill = $pdo->prepare('INSERT INTO skills (member_slug, name, sort_order) VALUES (:slug, :name, :sort_order)');
+                foreach ($skills as $index => $skill) {
+                    if (mb_strlen($skill, 'UTF-8') > 100) throw new RuntimeException('Nama skill maksimal 100 karakter.');
+                    $insertSkill->execute(['slug' => $slug, 'name' => $skill, 'sort_order' => $index + 1]);
+                }
+                $pdo->commit();
+                $notice = 'Profil dan skill anggota berhasil diperbarui.';
+            } elseif ($action === 'save_project') {
+                $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT) ?: null;
+                $memberSlug = post_text('member_slug', 32);
+                $number = post_text('number_label', 16);
+                $title = post_text('title', 160);
+                $category = post_text('category', 120);
+                $description = post_text('description', 3000);
+                $linkUrl = optional_url(post_text('link_url', 500));
+                $linkLabel = post_text('link_label', 120) ?: null;
+                $tools = array_values(array_unique(array_filter(array_map('trim', preg_split('/[,\r\n]+/', post_text('tools', 1000)) ?: []))));
+                if (!in_array($memberSlug, ['zaki', 'rifqy'], true) || $number === '' || $title === '' || $category === '' || $description === '' || $tools === []) {
+                    throw new RuntimeException('Anggota, nomor, judul, kategori, deskripsi, dan teknologi proyek wajib diisi.');
+                }
+                $toolsJson = json_encode($tools, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+                if ($id) {
+                    $stmt = $pdo->prepare('UPDATE projects SET member_slug=:member_slug, number_label=:number_label, title=:title, category=:category, description=:description, tools_json=:tools_json, link_url=:link_url, link_label=:link_label WHERE id=:id');
+                    $stmt->execute(['member_slug' => $memberSlug, 'number_label' => $number, 'title' => $title, 'category' => $category, 'description' => $description, 'tools_json' => $toolsJson, 'link_url' => $linkUrl, 'link_label' => $linkLabel, 'id' => $id]);
+                    $notice = 'Proyek berhasil diperbarui.';
+                } else {
+                    $orderQuery = $pdo->prepare('SELECT COALESCE(MAX(sort_order),0)+1 FROM projects WHERE member_slug=:member_slug');
+                    $orderQuery->execute(['member_slug' => $memberSlug]);
+                    $order = (int) $orderQuery->fetchColumn();
+                    $stmt = $pdo->prepare('INSERT INTO projects (member_slug, number_label, title, category, description, tools_json, link_url, link_label, sort_order) VALUES (:member_slug, :number_label, :title, :category, :description, :tools_json, :link_url, :link_label, :sort_order)');
+                    $stmt->execute(['member_slug' => $memberSlug, 'number_label' => $number, 'title' => $title, 'category' => $category, 'description' => $description, 'tools_json' => $toolsJson, 'link_url' => $linkUrl, 'link_label' => $linkLabel, 'sort_order' => $order]);
+                    $notice = 'Proyek baru berhasil ditambahkan.';
+                }
+            } elseif ($action === 'delete_project') {
+                $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+                if (!$id) throw new RuntimeException('Proyek tidak valid.');
+                $pdo->prepare('DELETE FROM projects WHERE id=:id')->execute(['id' => $id]);
+                $notice = 'Proyek berhasil dihapus.';
+            } elseif ($action === 'save_certificate') {
+                $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT) ?: null;
+                $memberSlug = post_text('member_slug', 32);
+                $title = post_text('title', 180);
+                $issuer = post_text('issuer', 180);
+                $dateLabel = post_text('date_label', 80);
+                $url = optional_url(post_text('url', 500));
+                if (!in_array($memberSlug, ['zaki', 'rifqy'], true) || $title === '' || $issuer === '' || $dateLabel === '') {
+                    throw new RuntimeException('Anggota, nama sertifikat, penyelenggara, dan tanggal wajib diisi.');
+                }
+                if ($id) {
+                    $stmt = $pdo->prepare('UPDATE certificates SET member_slug=:member_slug, title=:title, issuer=:issuer, date_label=:date_label, url=:url WHERE id=:id');
+                    $stmt->execute(['member_slug' => $memberSlug, 'title' => $title, 'issuer' => $issuer, 'date_label' => $dateLabel, 'url' => $url, 'id' => $id]);
+                    $notice = 'Sertifikat berhasil diperbarui.';
+                } else {
+                    $orderQuery = $pdo->prepare('SELECT COALESCE(MAX(sort_order),0)+1 FROM certificates WHERE member_slug=:member_slug');
+                    $orderQuery->execute(['member_slug' => $memberSlug]);
+                    $order = (int) $orderQuery->fetchColumn();
+                    $stmt = $pdo->prepare('INSERT INTO certificates (member_slug, title, issuer, date_label, url, sort_order) VALUES (:member_slug, :title, :issuer, :date_label, :url, :sort_order)');
+                    $stmt->execute(['member_slug' => $memberSlug, 'title' => $title, 'issuer' => $issuer, 'date_label' => $dateLabel, 'url' => $url, 'sort_order' => $order]);
+                    $notice = 'Sertifikat berhasil ditambahkan.';
+                }
+            } elseif ($action === 'delete_certificate') {
+                $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+                if (!$id) throw new RuntimeException('Sertifikat tidak valid.');
+                $pdo->prepare('DELETE FROM certificates WHERE id=:id')->execute(['id' => $id]);
+                $notice = 'Sertifikat berhasil dihapus.';
+            } elseif ($action === 'delete_testimonial') {
+                $id = filter_var($_POST['id'] ?? null, FILTER_VALIDATE_INT);
+                if (!$id) throw new RuntimeException('Testimoni tidak valid.');
+                $pdo->prepare('DELETE FROM testimonials WHERE id=:id')->execute(['id' => $id]);
+                $notice = 'Testimoni berhasil dihapus.';
+            } else {
+                throw new RuntimeException('Aksi admin tidak dikenali.');
+            }
+        } catch (Throwable $exception) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            $error = $exception instanceof PDOException && $exception->getCode() === '23000'
+                ? 'Data dengan nama tersebut sudah ada untuk anggota itu.'
+                : $exception->getMessage();
         }
     }
 }
 
-$pending = [];
-if (!empty($_SESSION['admin_logged_in']) && $pdo instanceof PDO) {
-    $pending = $pdo->query("SELECT id, member_slug, project_title, name, role, message, created_at FROM testimonials WHERE status = 'pending' ORDER BY created_at ASC")->fetchAll();
+$members = [];
+$projects = [];
+$certificates = [];
+$testimonials = [];
+$editingProject = null;
+$editingCertificate = null;
+if ($pdo instanceof PDO) {
+    $members = $pdo->query('SELECT * FROM team_members ORDER BY FIELD(slug, \'zaki\', \'rifqy\')')->fetchAll();
+    foreach ($pdo->query('SELECT member_slug, name FROM skills ORDER BY member_slug, sort_order, id')->fetchAll() as $skill) {
+        $memberIndex = array_search($skill['member_slug'], array_column($members, 'slug'), true);
+        if ($memberIndex !== false) {
+            $members[$memberIndex]['skills'][] = $skill['name'];
+        }
+    }
+    $projects = $pdo->query('SELECT * FROM projects ORDER BY member_slug, sort_order, id')->fetchAll();
+    $certificates = $pdo->query('SELECT * FROM certificates ORDER BY member_slug, sort_order, id')->fetchAll();
+    $testimonials = $pdo->query('SELECT * FROM testimonials ORDER BY created_at DESC')->fetchAll();
+    $editProjectId = filter_var($_GET['edit_project'] ?? null, FILTER_VALIDATE_INT);
+    $editCertificateId = filter_var($_GET['edit_certificate'] ?? null, FILTER_VALIDATE_INT);
+    if ($editProjectId) {
+        $stmt = $pdo->prepare('SELECT * FROM projects WHERE id=:id');
+        $stmt->execute(['id' => $editProjectId]);
+        $editingProject = $stmt->fetch() ?: null;
+    }
+    if ($editCertificateId) {
+        $stmt = $pdo->prepare('SELECT * FROM certificates WHERE id=:id');
+        $stmt->execute(['id' => $editCertificateId]);
+        $editingCertificate = $stmt->fetch() ?: null;
+    }
 }
+
+$loggedIn = !empty($_SESSION['admin_logged_in']);
 ?>
 <!doctype html>
 <html lang="id">
@@ -75,65 +215,113 @@ if (!empty($_SESSION['admin_logged_in']) && $pdo instanceof PDO) {
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="shell">
-    <header class="topbar"><a class="brand" href="./">RPL <span>/ ADMIN</span></a><span>Panel terpisah · XAMPP lokal</span></header>
+  <main class="shell admin-shell">
+    <header class="topbar"><a class="brand" href="./">RPL <span>/ ADMIN</span></a><span>Panel pengelolaan · XAMPP lokal</span></header>
     <section class="intro">
       <p class="eyebrow">PANEL ADMIN</p>
-      <h1>Kelola testimoni.</h1>
-      <p>Testimoni baru langsung tampil di website. Panel ini hanya menampilkan kiriman lama yang masih menunggu.</p>
+      <h1>Kelola portofolio.</h1>
+      <p>Atur profil, skill, proyek, sertifikat, dan hapus testimoni yang tidak diinginkan.</p>
     </section>
 
     <?php if ($error !== ''): ?><div class="notice error"><?= h($error) ?></div><?php endif; ?>
     <?php if ($notice !== ''): ?><div class="notice success"><?= h($notice) ?></div><?php endif; ?>
 
-    <?php if (empty($_SESSION['admin_logged_in'])): ?>
+    <?php if (!$loggedIn): ?>
       <form class="card login-card" method="post">
         <h2>Masuk sebagai admin</h2>
-        <input type="hidden" name="csrf" value="<?= h($_SESSION['csrf']) ?>">
+        <?= csrf_field() ?>
         <input type="hidden" name="action" value="login">
         <label>Nama pengguna<input name="username" autocomplete="username" required></label>
         <label>Kata sandi<input type="password" name="password" autocomplete="current-password" required></label>
         <button type="submit">Masuk</button>
       </form>
     <?php else: ?>
-      <form class="logout-form" method="post">
-        <input type="hidden" name="csrf" value="<?= h($_SESSION['csrf']) ?>">
-        <input type="hidden" name="action" value="logout">
-        <button class="button-secondary" type="submit">Keluar</button>
-      </form>
-      <div class="queue-heading"><h2>Kiriman lama yang masih menunggu</h2><span><?= count($pending) ?> kiriman</span></div>
-      <?php if ($pending === []): ?>
-        <div class="card empty"><strong>Tidak ada kiriman lama yang menunggu.</strong><p>Testimoni baru langsung tampil di website user.</p></div>
-      <?php else: ?>
-        <div class="pending-list">
-          <?php foreach ($pending as $item): ?>
-            <article class="card testimonial">
-              <p class="eyebrow"><?= h($item['member_slug']) ?><?= $item['project_title'] ? ' · ' . h($item['project_title']) : '' ?></p>
-              <blockquote>“<?= h($item['message']) ?>”</blockquote>
-              <p><strong><?= h($item['name']) ?></strong><?= $item['role'] ? ' · ' . h($item['role']) : '' ?></p>
-              <small><?= h($item['created_at']) ?></small>
-              <div class="actions">
-                <form method="post">
-                  <input type="hidden" name="csrf" value="<?= h($_SESSION['csrf']) ?>">
-                  <input type="hidden" name="action" value="review">
-                  <input type="hidden" name="id" value="<?= (int) $item['id'] ?>">
-                  <input type="hidden" name="status" value="approved">
-                  <button type="submit">Setujui</button>
-                </form>
-                <form method="post">
-                  <input type="hidden" name="csrf" value="<?= h($_SESSION['csrf']) ?>">
-                  <input type="hidden" name="action" value="review">
-                  <input type="hidden" name="id" value="<?= (int) $item['id'] ?>">
-                  <input type="hidden" name="status" value="rejected">
-                  <button class="button-secondary" type="submit">Tolak</button>
-                </form>
+      <nav class="admin-nav">
+        <a href="#members">Profil &amp; skill</a><a href="#projects">Proyek</a><a href="#certificates">Sertifikat</a><a href="#testimonials">Testimoni</a>
+      </nav>
+      <form class="logout-form" method="post"><?= csrf_field() ?><input type="hidden" name="action" value="logout"><button class="button-secondary" type="submit">Keluar</button></form>
+
+      <section class="admin-section" id="members">
+        <div class="section-heading"><div><p class="eyebrow">01 · ANGGOTA</p><h2>Profil dan skill</h2></div><span><?= count($members) ?> anggota</span></div>
+        <div class="editor-grid">
+          <?php foreach ($members as $member): ?>
+            <form class="card editor-card" method="post">
+              <?= csrf_field() ?><input type="hidden" name="action" value="save_member"><input type="hidden" name="slug" value="<?= h($member['slug']) ?>">
+              <h3><?= h($member['name']) ?></h3>
+              <div class="field-grid">
+                <label>Nama<input name="name" value="<?= h($member['name']) ?>" maxlength="80" required></label>
+                <label>Peran<input name="role" value="<?= h($member['role']) ?>" maxlength="160" required></label>
+                <label>Inisial<input name="initials" value="<?= h($member['initials']) ?>" maxlength="8" required></label>
+                <label>Warna kartu<select name="color"><option value="orange" <?= $member['color'] === 'orange' ? 'selected' : '' ?>>Oranye</option><option value="blue" <?= $member['color'] === 'blue' ? 'selected' : '' ?>>Biru</option></select></label>
+                <label class="field-full">Foto (path di folder public)<input name="photo" value="<?= h($member['photo']) ?>" placeholder="/images/nama.png" required></label>
+                <label class="field-full">Tentang<textarea name="about" rows="4" maxlength="2000" required><?= h($member['about']) ?></textarea></label>
+                <label class="field-full">Skill (pisahkan dengan koma atau baris baru)<textarea name="skills" rows="3" maxlength="2000"><?= h(implode(', ', $member['skills'] ?? [])) ?></textarea></label>
+                <label class="field-full">Tautan kontak<input type="url" name="contact_url" value="<?= h($member['contact_url']) ?>" placeholder="https://..."></label>
               </div>
-            </article>
+              <button type="submit">Simpan profil</button>
+            </form>
           <?php endforeach; ?>
         </div>
-      <?php endif; ?>
+      </section>
+
+      <section class="admin-section" id="projects">
+        <div class="section-heading"><div><p class="eyebrow">02 · KARYA</p><h2>Proyek</h2></div><span><?= count($projects) ?> proyek</span></div>
+        <form class="card editor-card" method="post">
+          <?= csrf_field() ?><input type="hidden" name="action" value="save_project"><input type="hidden" name="id" value="<?= h((string) ($editingProject['id'] ?? '')) ?>">
+          <h3><?= $editingProject ? 'Edit proyek' : 'Tambah proyek' ?></h3>
+          <div class="field-grid">
+            <label>Anggota<select name="member_slug"><option value="zaki" <?= ($editingProject['member_slug'] ?? '') === 'zaki' ? 'selected' : '' ?>>Zaki</option><option value="rifqy" <?= ($editingProject['member_slug'] ?? '') === 'rifqy' ? 'selected' : '' ?>>Rifqy</option></select></label>
+            <label>Nomor<input name="number_label" value="<?= h($editingProject['number_label'] ?? '') ?>" placeholder="04" maxlength="16" required></label>
+            <label>Judul<input name="title" value="<?= h($editingProject['title'] ?? '') ?>" maxlength="160" required></label>
+            <label>Kategori<input name="category" value="<?= h($editingProject['category'] ?? '') ?>" maxlength="120" required></label>
+            <label class="field-full">Deskripsi<textarea name="description" rows="3" maxlength="3000" required><?= h($editingProject['description'] ?? '') ?></textarea></label>
+            <label class="field-full">Teknologi (pisahkan dengan koma atau baris baru)<textarea name="tools" rows="2" required><?= h(implode(', ', json_decode($editingProject['tools_json'] ?? '[]', true) ?: [])) ?></textarea></label>
+            <label>Tautan<input type="url" name="link_url" value="<?= h($editingProject['link_url'] ?? '') ?>" placeholder="https://..."></label>
+            <label>Label tautan<input name="link_label" value="<?= h($editingProject['link_label'] ?? '') ?>" maxlength="120"></label>
+          </div>
+          <div class="actions"><button type="submit"><?= $editingProject ? 'Simpan perubahan' : 'Tambah proyek' ?></button><?php if ($editingProject): ?><a class="button-secondary button-link" href="#projects">Batal edit</a><?php endif; ?></div>
+        </form>
+        <div class="record-list">
+          <?php foreach ($projects as $project): ?>
+            <article class="card record-card"><div><p class="eyebrow"><?= h($project['member_slug']) ?> · <?= h($project['category']) ?></p><h3><?= h($project['title']) ?></h3><p><?= h($project['description']) ?></p><small>Teknologi: <?= h(implode(', ', json_decode($project['tools_json'], true) ?: [])) ?></small></div><div class="actions"><a class="button-secondary button-link" href="?edit_project=<?= (int) $project['id'] ?>#projects">Edit</a><form method="post" onsubmit="return confirm('Hapus proyek ini?')"><?= csrf_field() ?><input type="hidden" name="action" value="delete_project"><input type="hidden" name="id" value="<?= (int) $project['id'] ?>"><button class="danger-button" type="submit">Hapus</button></form></div></article>
+          <?php endforeach; ?>
+        </div>
+      </section>
+
+      <section class="admin-section" id="certificates">
+        <div class="section-heading"><div><p class="eyebrow">03 · PENCAPAIAN</p><h2>Sertifikat</h2></div><span><?= count($certificates) ?> sertifikat</span></div>
+        <form class="card editor-card" method="post">
+          <?= csrf_field() ?><input type="hidden" name="action" value="save_certificate"><input type="hidden" name="id" value="<?= h((string) ($editingCertificate['id'] ?? '')) ?>">
+          <h3><?= $editingCertificate ? 'Edit sertifikat' : 'Tambah sertifikat' ?></h3>
+          <div class="field-grid">
+            <label>Anggota<select name="member_slug"><option value="zaki" <?= ($editingCertificate['member_slug'] ?? '') === 'zaki' ? 'selected' : '' ?>>Zaki</option><option value="rifqy" <?= ($editingCertificate['member_slug'] ?? '') === 'rifqy' ? 'selected' : '' ?>>Rifqy</option></select></label>
+            <label>Nama sertifikat<input name="title" value="<?= h($editingCertificate['title'] ?? '') ?>" maxlength="180" required></label>
+            <label>Penyelenggara<input name="issuer" value="<?= h($editingCertificate['issuer'] ?? '') ?>" maxlength="180" required></label>
+            <label>Tanggal / tahun<input name="date_label" value="<?= h($editingCertificate['date_label'] ?? '') ?>" maxlength="80" placeholder="2026" required></label>
+            <label class="field-full">Tautan sertifikat<input type="url" name="url" value="<?= h($editingCertificate['url'] ?? '') ?>" placeholder="https://..."></label>
+          </div>
+          <div class="actions"><button type="submit"><?= $editingCertificate ? 'Simpan perubahan' : 'Tambah sertifikat' ?></button><?php if ($editingCertificate): ?><a class="button-secondary button-link" href="#certificates">Batal edit</a><?php endif; ?></div>
+        </form>
+        <div class="record-list">
+          <?php foreach ($certificates as $certificate): ?>
+            <article class="card record-card"><div><p class="eyebrow"><?= h($certificate['member_slug']) ?> · <?= h($certificate['date_label']) ?></p><h3><?= h($certificate['title']) ?></h3><p><?= h($certificate['issuer']) ?></p></div><div class="actions"><a class="button-secondary button-link" href="?edit_certificate=<?= (int) $certificate['id'] ?>#certificates">Edit</a><form method="post" onsubmit="return confirm('Hapus sertifikat ini?')"><?= csrf_field() ?><input type="hidden" name="action" value="delete_certificate"><input type="hidden" name="id" value="<?= (int) $certificate['id'] ?>"><button class="danger-button" type="submit">Hapus</button></form></div></article>
+          <?php endforeach; ?>
+          <?php if ($certificates === []): ?><div class="card empty"><strong>Belum ada sertifikat.</strong><p>Tambahkan sertifikat dari formulir di atas.</p></div><?php endif; ?>
+        </div>
+      </section>
+
+      <section class="admin-section" id="testimonials">
+        <div class="section-heading"><div><p class="eyebrow">04 · MASUKAN PUBLIK</p><h2>Testimoni</h2></div><span><?= count($testimonials) ?> testimoni</span></div>
+        <p class="section-help">Testimoni yang dikirim langsung tampil. Hapus kiriman yang tidak ingin ditampilkan.</p>
+        <div class="record-list">
+          <?php foreach ($testimonials as $testimonial): ?>
+            <article class="card record-card"><div><p class="eyebrow"><?= h($testimonial['member_slug']) ?><?= $testimonial['project_title'] ? ' · ' . h($testimonial['project_title']) : '' ?></p><blockquote>“<?= h($testimonial['message']) ?>”</blockquote><p><strong><?= h($testimonial['name']) ?></strong><?= $testimonial['role'] ? ' · ' . h($testimonial['role']) : '' ?></p><small><?= h($testimonial['created_at']) ?></small></div><form method="post" onsubmit="return confirm('Hapus testimoni ini secara permanen?')"><?= csrf_field() ?><input type="hidden" name="action" value="delete_testimonial"><input type="hidden" name="id" value="<?= (int) $testimonial['id'] ?>"><button class="danger-button" type="submit">Hapus testimoni</button></form></article>
+          <?php endforeach; ?>
+          <?php if ($testimonials === []): ?><div class="card empty"><strong>Belum ada testimoni.</strong></div><?php endif; ?>
+        </div>
+      </section>
     <?php endif; ?>
-    <footer>Data tersimpan di MySQL XAMPP pada komputer ini.</footer>
+    <footer>Perubahan tersimpan di database MySQL XAMPP dan tampil di website lokal.</footer>
   </main>
 </body>
 </html>
