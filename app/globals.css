@@ -1345,6 +1345,189 @@ h3 {
     box-shadow: none;
   }
 }
+
+.testimonial-area {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 0.9fr);
+  gap: 24px;
+  align-items: start;
+}
+
+.published-testimonials {
+  display: grid;
+  gap: 16px;
+}
+
+.testimonial-card blockquote,
+.pending-testimonial blockquote {
+  margin: 0 0 16px;
+  color: var(--ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  line-height: 1.5;
+}
+
+.testimonial-form {
+  padding: 26px;
+  border: 2px solid var(--ink);
+  background: var(--yellow);
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.testimonial-form h3 {
+  margin: 0 0 8px;
+  font-size: 28px;
+}
+
+.form-intro {
+  margin: 0 0 20px;
+  color: #50576a;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.form-grid label,
+.admin-login-form label {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.form-grid input,
+.form-grid select,
+.form-grid textarea,
+.admin-login-form input {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #8c897f;
+  border-radius: 0;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+
+.form-grid textarea {
+  resize: vertical;
+}
+
+.form-full-width {
+  grid-column: 1 / -1;
+}
+
+.consent-field {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 18px 0;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.consent-field input {
+  flex: 0 0 auto;
+  width: 17px;
+  height: 17px;
+  margin: 0;
+}
+
+.testimonial-form .main-button {
+  margin-top: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.testimonial-form .main-button:disabled,
+.admin-login-form button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.form-status {
+  padding: 12px 14px;
+  border-left: 4px solid var(--blue);
+  background: #eef3ff;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.admin-testimonials {
+  margin-top: 32px;
+}
+
+.admin-login-form {
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) auto;
+  gap: 10px;
+  align-items: end;
+  max-width: 600px;
+}
+
+.admin-login-form label {
+  grid-column: 1 / -1;
+}
+
+.admin-login-form button,
+.review-actions button {
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 2px solid var(--ink);
+  background: var(--blue);
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pending-list {
+  display: grid;
+  gap: 14px;
+  margin-top: 20px;
+}
+
+.pending-testimonial {
+  padding: 20px;
+  border: 1px solid var(--line);
+  background: #fffdf7;
+}
+
+.pending-testimonial p {
+  line-height: 1.6;
+}
+
+.review-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.review-actions .secondary-review {
+  background: white;
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .testimonial-area,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-full-width,
+  .admin-login-form label {
+    grid-column: auto;
+  }
+
+  .admin-login-form {
+    grid-template-columns: 1fr;
+  }
+}
 .portfolio-person{
     display:flex;
     justify-content:space-between;

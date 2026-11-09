@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { members } from "./data/team";
+import TestimonialsSection from "./components/TestimonialsSection";
 
 export default function HomePage() {
   return (
@@ -126,19 +127,7 @@ export default function HomePage() {
           <p className="eyebrow">TESTIMONI</p>
           <h2>Kata mereka tentang karya kami.</h2>
         </div>
-        <div className="checklist-grid">
-          {members.map((member) => (
-            <article className="empty-content-card" key={member.slug}>
-              <p className="eyebrow">{member.name}</p>
-              {member.testimonials.length ? member.testimonials.map((testimonial) => (
-                <div className="content-entry" key={`${testimonial.name}-${testimonial.role}`}>
-                  <blockquote>“{testimonial.message}”</blockquote>
-                  <p><strong>{testimonial.name}</strong> · {testimonial.role}</p>
-                </div>
-              )) : <><strong>Belum ada testimoni.</strong><p>Testimoni ditampilkan setelah mendapat persetujuan pemberi masukan.</p></>}
-            </article>
-          ))}
-        </div>
+        <TestimonialsSection members={members.map(({ slug, name, projects }) => ({ slug, name, projects: projects.map(({ title }) => ({ title })) }))} />
       </section>
 
       <section className="container checklist-section" id="contact">
