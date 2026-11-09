@@ -38,6 +38,9 @@ yarn-error.log*
 .env*.local
 .env
 
+# Local XAMPP credentials
+/xampp/portfolio-api/config.php
+
 # vercel
 .vercel
 

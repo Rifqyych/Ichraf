@@ -31,6 +31,13 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deploy on Vercel
 
+
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+## Local testimonial database and admin
+
+The public portfolio runs with Next.js at `http://localhost:3000`. Start Apache and MySQL in XAMPP for the local testimonial database. The separate admin site is served by XAMPP at `http://localhost/portfolio-admin/`.
+
+Follow [XAMPP_SETUP.md](./XAMPP_SETUP.md) to create the database and configure the separate API and admin folders.

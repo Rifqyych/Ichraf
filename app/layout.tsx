@@ -31,7 +31,6 @@ export default function RootLayout({
               <Link href="/profile">Profil Tim</Link>
               <Link href="/portofolio/blog">Blog</Link>
               <Link href="/proyek">Proyek</Link>
-              <Link href="/admin">Admin</Link>
             </nav>
           </div>
         </header>

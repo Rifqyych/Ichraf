@@ -17,6 +17,9 @@ type Testimonial = {
   message: string;
 };
 
+const testimonialsApiUrl = process.env.NEXT_PUBLIC_TESTIMONI_API_URL
+  || "http://localhost/portfolio-api/testimonials.php";
+
 export default function TestimonialsSection({ members }: { members: MemberOption[] }) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [memberSlug, setMemberSlug] = useState(members[0]?.slug ?? "");
@@ -29,7 +32,7 @@ export default function TestimonialsSection({ members }: { members: MemberOption
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    fetch("/api/testimoni", { cache: "no-store" })
+    fetch(testimonialsApiUrl, { cache: "no-store" })
       .then(async (response) => {
         if (!response.ok) throw new Error("Not available");
         return response.json();
@@ -44,7 +47,7 @@ export default function TestimonialsSection({ members }: { members: MemberOption
     setStatus("");
 
     try {
-      const response = await fetch("/api/testimoni", {
+      const response = await fetch(testimonialsApiUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ memberSlug, projectTitle, name, role, message }),

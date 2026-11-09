@@ -119,7 +119,7 @@ export default function HomePage() {
             </article>
           ))}
         </div>
-        <p><Link className="section-link" href="/admin">Buka halaman admin →</Link></p>
+        <p className="muted-note">Sertifikat dapat ditambahkan saat datanya tersedia.</p>
       </section>
 
       <section className="container checklist-section" id="testimonials">
