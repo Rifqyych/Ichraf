@@ -11,7 +11,7 @@ $mysqlClient = Get-ChildItem -LiteralPath $mysqlRoot -Directory -ErrorAction Sil
   ForEach-Object { Join-Path $_.FullName "bin\mysql.exe" } |
   Where-Object { Test-Path -LiteralPath $_ } |
   Select-Object -First 1
-$mysqlPort = 3307
+$mysqlPort = 3306
 if (-not [string]::IsNullOrWhiteSpace($env:LARAGON_MYSQL_PORT)) {
   $mysqlPort = [int] $env:LARAGON_MYSQL_PORT
 }

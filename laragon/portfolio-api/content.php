@@ -3,7 +3,7 @@ require_once __DIR__ . '/bootstrap.php';
 
 $publicAssetUrl = static function (?string $path): ?string {
     if (!$path) return null;
-    if (str_starts_with($path, '/portfolio-api/uploads/')) return 'http://localhost:8080' . $path;
+    if (str_starts_with($path, '/portfolio-api/uploads/')) return 'http://localhost' . $path;
     return $path;
 };
 

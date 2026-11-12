@@ -38,6 +38,6 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Local testimonial database and admin
 
-The public portfolio runs with Next.js at `http://localhost:3000`. Start Apache and MySQL in Laragon for the local database. The separate admin site is served by Laragon at `http://localhost:8080/portfolio-admin/`.
+The public portfolio runs with Next.js at `http://localhost:3000`. Start Apache and MySQL in Laragon for the local database. The separate admin site is served by Laragon at `http://localhost/portfolio-admin/`.
 
 Follow [LARAGON_SETUP.md](./LARAGON_SETUP.md) to create the database and configure the separate API and admin folders.

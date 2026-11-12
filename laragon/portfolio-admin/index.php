@@ -61,7 +61,7 @@ function upload_file(string $field, bool $allowPdf): ?string
 function public_asset_url(?string $path): ?string
 {
     if (!$path) return null;
-    if (str_starts_with($path, '/portfolio-api/uploads/')) return 'http://localhost:8080' . $path;
+    if (str_starts_with($path, '/portfolio-api/uploads/')) return 'http://localhost' . $path;
     if (str_starts_with($path, '/images/')) return 'http://localhost:3000' . $path;
     return $path;
 }
