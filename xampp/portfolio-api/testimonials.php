@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 try {
     $pdo = portfolio_db();
 } catch (Throwable $error) {
-    portfolio_json(['error' => 'Database Laragon belum siap. Periksa Apache, MySQL, dan config.php.'], 503);
+    portfolio_json(['error' => 'Database XAMPP belum siap. Periksa Apache, MySQL, dan config.php.'], 503);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {

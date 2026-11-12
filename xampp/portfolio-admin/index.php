@@ -47,13 +47,13 @@ function upload_file(string $field, bool $allowPdf): ?string
 
     $directory = dirname(__DIR__) . '/portfolio-api/uploads';
     if (!is_dir($directory) && !mkdir($directory, 0755, true) && !is_dir($directory)) {
-        throw new RuntimeException('Folder unggahan Laragon tidak dapat dibuat.');
+        throw new RuntimeException('Folder unggahan XAMPP tidak dapat dibuat.');
     }
-    if (!is_writable($directory)) throw new RuntimeException('Folder unggahan Laragon tidak memiliki izin tulis.');
+    if (!is_writable($directory)) throw new RuntimeException('Folder unggahan XAMPP tidak memiliki izin tulis.');
 
     $filename = bin2hex(random_bytes(16)) . '.' . $allowed[$mime];
     if (!move_uploaded_file($file['tmp_name'], $directory . '/' . $filename)) {
-        throw new RuntimeException('File tidak bisa disimpan ke folder unggahan Laragon.');
+        throw new RuntimeException('File tidak bisa disimpan ke folder unggahan XAMPP.');
     }
     return '/portfolio-api/uploads/' . $filename;
 }
@@ -263,7 +263,7 @@ $loggedIn = !empty($_SESSION['admin_logged_in']);
 </head>
 <body>
   <main class="shell admin-shell">
-    <header class="topbar"><a class="brand" href="./">RPL <span>/ ADMIN</span></a><span>Panel pengelolaan · Laragon lokal</span></header>
+    <header class="topbar"><a class="brand" href="./">RPL <span>/ ADMIN</span></a><span>Panel pengelolaan · XAMPP lokal</span></header>
     <section class="intro">
       <p class="eyebrow">PANEL ADMIN</p>
       <h1>Kelola portofolio.</h1>
@@ -368,7 +368,7 @@ $loggedIn = !empty($_SESSION['admin_logged_in']);
         </div>
       </section>
     <?php endif; ?>
-    <footer>Perubahan tersimpan di database MySQL Laragon dan tampil di website lokal.</footer>
+    <footer>Perubahan tersimpan di database MySQL XAMPP dan tampil di website lokal.</footer>
   </main>
 </body>
 </html>

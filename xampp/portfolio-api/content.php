@@ -60,5 +60,5 @@ try {
 
     portfolio_json(['members' => array_values($members)]);
 } catch (Throwable $error) {
-    portfolio_json(['error' => 'Konten portofolio Laragon belum siap. Jalankan db:setup.'], 503);
+    portfolio_json(['error' => 'Konten portofolio XAMPP belum siap. Jalankan db:setup.'], 503);
 }

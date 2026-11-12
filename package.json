@@ -7,8 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "db:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-laragon-db.ps1",
-    "laragon:sync": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/sync-laragon.ps1"
+    "db:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/setup-xampp-db.ps1"
   },
   "dependencies": {
     "next": "16.2.10",
