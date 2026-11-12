@@ -4,7 +4,7 @@ Website user berjalan dengan Next.js di `http://localhost:3000`. Database MySQL,
 
 ## Persiapan Laragon
 
-1. Buka Laragon di `C:\laragon` dan pilih **Start All** untuk menjalankan Apache dan MySQL. Jangan jalankan Apache XAMPP bersamaan jika keduanya memakai port 80.
+1. Buka Laragon di `C:\laragon` dan pilih **Start All** untuk menjalankan Apache dan MySQL. Laragon dipisahkan ke Apache port `8080` dan MySQL port `3307`, agar tidak membaca service XAMPP di port `80`/`3306`.
 2. Di terminal VS Code pada folder project, jalankan:
 
    ```powershell
@@ -12,7 +12,7 @@ Website user berjalan dengan Next.js di `http://localhost:3000`. Database MySQL,
    ```
 
    Ini menyalin API dan admin ke `C:\laragon\www`. Jika ada konfigurasi dan berkas unggahan XAMPP lokal, skrip juga menyalinnya sebagai salinan; berkas XAMPP tidak dihapus.
-3. Jika Laragon menggunakan kata sandi MySQL berbeda, edit `C:\laragon\www\portfolio-api\config.php` agar `db_password` cocok dengan MySQL Laragon. File ini lokal dan tidak masuk GitHub.
+3. Jika Laragon menggunakan kata sandi MySQL berbeda, edit `C:\laragon\www\portfolio-api\config.php` agar `db_password` cocok dengan MySQL Laragon di port `3307`. File ini lokal dan tidak masuk GitHub.
 4. Siapkan tabel database:
 
    ```powershell
@@ -29,8 +29,9 @@ Website user berjalan dengan Next.js di `http://localhost:3000`. Database MySQL,
 ## Alamat
 
 - Website user: `http://localhost:3000`
-- Admin terpisah: `http://localhost/portfolio-admin/`
-- API konten: `http://localhost/portfolio-api/content.php`
+- Admin terpisah: `http://localhost:8080/portfolio-admin/`
+- API konten: `http://localhost:8080/portfolio-api/content.php`
+- phpMyAdmin Laragon: `http://localhost:8080/phpmyadmin/` (gunakan server MySQL port `3307`)
 
 Admin mengelola profil, skill, proyek, sertifikat, dan penghapusan testimoni. Perubahan database tampil pada halaman user otomatis dalam beberapa detik. Foto profil menerima JPG, PNG, atau WebP; sertifikat menerima PDF atau gambar, maksimal 12 MB. Berkas tersimpan lokal di `C:\laragon\www\portfolio-api\uploads`.
 
@@ -42,4 +43,4 @@ Skrip sinkronisasi menyalin kode, konfigurasi lokal yang tersedia, serta berkas 
 2. Nyalakan MySQL Laragon, buka phpMyAdmin Laragon, lalu impor file `.sql` tersebut. Jika ingin database baru dengan data contoh, jalankan `npm run db:setup` sebagai gantinya.
 3. Pastikan `config.php` di `C:\laragon\www\portfolio-api` memakai user, kata sandi, dan port MySQL Laragon.
 
-Jika Apache atau MySQL Laragon memakai port khusus, atur `LARAGON_HOME` atau `LARAGON_MYSQL_PORT` di terminal. Untuk URL API Next.js khusus, atur `NEXT_PUBLIC_TESTIMONI_API_URL` pada `.env.local`, lalu mulai ulang `npm run dev`.
+Jika Apache atau MySQL Laragon memakai port selain `8080`/`3307`, atur `PORTFOLIO_CONTENT_API_URL`, `NEXT_PUBLIC_TESTIMONI_API_URL`, atau `LARAGON_MYSQL_PORT` sesuai kebutuhan, lalu mulai ulang `npm run dev`.

@@ -34,7 +34,7 @@ function portfolio_db(): PDO
     $dsn = sprintf(
         'mysql:host=%s;port=%d;dbname=%s;charset=utf8mb4',
         $config['db_host'] ?? '127.0.0.1',
-        (int) ($config['db_port'] ?? 3306),
+        (int) ($config['db_port'] ?? 3307),
         $config['db_name'] ?? 'portfolio_testimonials'
     );
 

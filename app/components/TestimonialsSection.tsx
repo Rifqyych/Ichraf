@@ -18,7 +18,7 @@ type Testimonial = {
 };
 
 const testimonialsApiUrl = process.env.NEXT_PUBLIC_TESTIMONI_API_URL
-  || "http://localhost/portfolio-api/testimonials.php";
+  || "http://localhost:8080/portfolio-api/testimonials.php";
 
 export default function TestimonialsSection({ members }: { members: MemberOption[] }) {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);

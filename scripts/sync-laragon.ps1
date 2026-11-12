@@ -36,6 +36,13 @@ if (-not (Test-Path -LiteralPath $configTarget)) {
   }
 }
 
+if (Test-Path -LiteralPath $configTarget) {
+  $configContents = Get-Content -LiteralPath $configTarget -Raw
+  $configContents = [regex]::Replace($configContents, "('db_port'\s*=>\s*)\d+", '${1}3307')
+  Set-Content -LiteralPath $configTarget -Value $configContents -Encoding utf8
+  Write-Host "Konfigurasi database Laragon diarahkan ke port 3307."
+}
+
 $legacyUploads = "C:\xampp\htdocs\portfolio-api\uploads"
 $laragonUploads = Join-Path $apiTarget "uploads"
 if (Test-Path -LiteralPath $legacyUploads) {
@@ -46,5 +53,5 @@ if (Test-Path -LiteralPath $legacyUploads) {
   Write-Host "Salinan file unggahan XAMPP disimpan di Laragon; file sumber XAMPP tidak dihapus."
 }
 
-Write-Host "API: http://localhost/portfolio-api/content.php"
-Write-Host "Admin: http://localhost/portfolio-admin/"
+Write-Host "API: http://localhost:8080/portfolio-api/content.php"
+Write-Host "Admin: http://localhost:8080/portfolio-admin/"

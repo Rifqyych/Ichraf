@@ -1,7 +1,7 @@
 import { members as fallbackMembers, type TeamMember } from "./team";
 
 const contentApiUrl = process.env.PORTFOLIO_CONTENT_API_URL
-  ?? "http://127.0.0.1/portfolio-api/content.php";
+  ?? "http://127.0.0.1:8080/portfolio-api/content.php";
 
 export async function getTeamMembers(): Promise<TeamMember[]> {
   try {
