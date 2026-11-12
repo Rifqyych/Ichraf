@@ -11,7 +11,7 @@ export default async function ProyekPage() {
     <main className="container listing-page">
       <p className="eyebrow">PORTOFOLIO TIM</p>
       <h1>Daftar proyek kami.</h1>
-      <p className="page-description">Proyek ini dikelola melalui panel admin dan disimpan di database XAMPP.</p>
+      <p className="page-description">Proyek ini dikelola melalui panel admin dan disimpan di database Laragon.</p>
 
       <div className="project-grid" style={{ marginTop: "42px" }}>
         {projects.map((project) => (

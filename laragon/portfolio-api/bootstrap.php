@@ -14,7 +14,7 @@ function portfolio_config(): array
 
     $loaded = require $configPath;
     if (!is_array($loaded)) {
-        throw new RuntimeException('Konfigurasi XAMPP tidak valid.');
+        throw new RuntimeException('Konfigurasi Laragon tidak valid.');
     }
     if (($loaded['admin_password'] ?? '') === 'CHANGE_THIS_ADMIN_PASSWORD' || empty($loaded['admin_password'])) {
         throw new RuntimeException('Ubah kata sandi admin pada config.php sebelum digunakan.');
